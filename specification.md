@@ -1,48 +1,24 @@
-# ITE-5: Signature scheme that avoids canonicalization
+# $signing_spec
 
 <table>
-<tr><td>ITE<td>5
-<tr><td>Title<td>Signature scheme that avoids canonicalization
-<tr><td>Sponsor<td><a href="https://github.com/santiagotorres">Santiago Torres-Arias</a>
-<tr><td>Status<td>Draft 💬
-<tr><td>Type<td>Standards
-<tr><td>Created<td>2020-09-28
+<tr><td>$signing_spec
+<tr><td>A signature scheme for software supply chain metadata that avoids canonicalization
+<tr><td>2020-09-28
 </table>
 
 # Abstract
 
-This [in-toto enhancement (ITE)](https://github.com/in-toto/ITE) proposes
-changing the in-toto/TUF signature scheme to (a) avoid relying on
-canonicalization for security and (b) reduce the possibility of
+This document proposes a new signature scheme for use by, among others, the
+in-toto and TUF projects. This signature scheme (a) avoids relying on
+canonicalization for security and (b) reduces the possibility of
 misinterpretation of the payload. The serialized payload is encoded as a string
-and verified by the recipient before deserializing. A backwards compatible
+and verified by the recipient _before_ deserializing. A backwards compatible
 variant is available.
 
 # Specification
 
-## Current format
-
-The
-[current signature format](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
-has a BODY that is a regular JSON object and a signature over the
-[Canonical JSON] serialization of BODY.
-
-```json
-{
-  "signed": <BODY>,
-  "signatures": [{
-    …,
-    "sig": "<Hex(Sign(CanonicalJson(BODY)))>"
-  }, …]
-}
-```
-
-To verify, the consumer parses the whole JSON file, re-serializes BODY using
-Canonical JSON, then verifies the signature.
-
-## Proposed format
-
-Instead of relying on Canonical JSON, the producer records the signed bytes
+$signing_spec does not rely on Canonical JSON or any other encoding /
+canonicalization. Instead, the producer records the signed bytes
 exactly as signed and the consumer verifies those exact bytes before parsing. In
 addition, the signature now includes an authenticated `payloadType` field
 indicating how to interpret the payload.
@@ -69,7 +45,8 @@ le64(n) := 64-bit little-endian encoding of `n`, where 0 <= n < 2^63
 The PAYLOAD_TYPE is a URI indicating how to interpret SERIALIZED_BODY. It
 encompasses the content type (JSON, CBOR, etc.), the purpose, and the schema
 version of the payload. This obviates the need for the `_type` field within
-in-toto/TUF payloads. Examples:
+in-toto/TUF payloads. This URI does not need to be resolved to a remote
+resource, nor does such a resource need to be fetched. Examples:
 
 -   https://in-toto.to/Link/v0.9
 -   https://in-toto.to/Layout/v0.9
@@ -264,13 +241,35 @@ Rationales for specific decisions:
         -   (a) Ties the payload type to the authentication type. Ideally the
             two would be independent.
         -   (b) May conflict with other uses of that same field.
-        -   (c) May require hte user to specify type multiple times with
+        -   (c) May require the user to specify type multiple times with
             different field names, e.g. with "@context" for
             [JSON-LD](https://json-ld.org/).
     2.  It would incur double base64 encoding overhead for non-JSON payloads.
     3.  It is more complex than PAE.
 
 # Backwards Compatibility
+
+## Current format
+
+The
+[current signature format](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
+used by TUF and in-toto has a BODY that is a regular JSON object and a signature over the
+[Canonical JSON] serialization of BODY.
+
+```json
+{
+  "signed": <BODY>,
+  "signatures": [{
+    …,
+    "sig": "<Hex(Sign(CanonicalJson(BODY)))>"
+  }, …]
+}
+```
+
+To verify, the consumer parses the whole JSON file, re-serializes BODY using
+Canonical JSON, then verifies the signature.
+
+## Detect if a document is using old format
 
 To detect whether a signature is in the old or new format:
 
