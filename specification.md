@@ -48,8 +48,8 @@ version of the payload. This obviates the need for the `_type` field within
 in-toto/TUF payloads. This URI does not need to be resolved to a remote
 resource, nor does such a resource need to be fetched. Examples:
 
--   https://in-toto.to/Link/v0.9
--   https://in-toto.to/Layout/v0.9
+-   https://in-toto.io/Link/v0.9
+-   https://in-toto.io/Layout/v0.9
 -   https://theupdateframework.com/Root/v1.0.5
 -   etc...
 
@@ -80,15 +80,15 @@ either, and verifiers must accept either.
 
 ## Backwards compatible signatures
 
-To convert existing signatures from the current format to the new format, the
-special `"backwards-compatible-json"` payload type indicates that the signature
-is over the raw payload. This allows the signatures to remain valid while
-avoiding the verifier from having to use CanonicalJson.
+To convert existing signatures from the current format to the new format,
+`"backwards-compatible-json"` must be added to the payload type URI to indicate
+that the signature is over the raw payload. This allows the signatures to remain
+valid while avoiding the verifier from having to use CanonicalJson.
 
 ```json
 {
   "payload": "<Base64(CanonicalJson(BODY))>",
-  "payloadType": "backwards-compatible-json",
+  "payloadType": "<URI>/backwards-compatible-json",
   "signatures" : [{
     …,
     "sig" : "<Base64(Sign(CanonicalJson(BODY)))>"
@@ -104,11 +104,11 @@ To sign:
 -   Serialize BODY as Canonical JSON; call this SERIALIZED_BODY.
 -   Sign SERIALIZED_BODY, base64-encode the result, and store it in `sig`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
--   Store `"backwards-compatible-json"` in `payloadType`.
+-   Store `"<URI>/backwards-compatible-json"` in `payloadType`.
 
 To verify:
 
--   If `payloadType` != `"backwards-compatible-json"`, use the normal
+-   If `payloadType` != `"<URI>/backwards-compatible-json"`, use the normal
     verification process instead of this one.
 -   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
     fails.
@@ -279,7 +279,7 @@ To detect whether a signature is in the old or new format:
 To convert an existing signature to the new format:
 
 -   `new.payload = base64encode(CanonicalJson(orig.signed))`
--   `new.payloadType = "backwards-compatible-json"`
+-   `new.payloadType = "<URI>/backwards-compatible-json"`
 -   `new.signatures[*].sig = base64encode(hexdecode(orig.signatures[*].sig))`
 
 To convert a backwards compatible signature to the old format:
