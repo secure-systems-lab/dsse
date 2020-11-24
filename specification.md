@@ -4,6 +4,7 @@
 <tr><td>$signing_spec
 <tr><td>A signature scheme for software supply chain metadata that avoids canonicalization
 <tr><td>2020-09-28
+<tr><td>Version 0.1.0
 </table>
 
 # Abstract
