@@ -1,13 +1,12 @@
 # $signing_spec
 
-<table>
-<tr><td>$signing_spec
-<tr><td>A signature scheme for software supply chain metadata that avoids canonicalization
-<tr><td>2020-09-28
-<tr><td>Version 0.1.0
-</table>
+A signature scheme for software supply chain metadata that avoids canonicalization
 
-# Abstract
+November 25, 2020
+
+Version 0.1.0
+
+## Abstract
 
 This document proposes a new signature scheme for use by, among others, the
 in-toto and TUF projects. This signature scheme (a) avoids relying on
@@ -16,10 +15,10 @@ misinterpretation of the payload. The serialized payload is encoded as a string
 and verified by the recipient _before_ deserializing. A backwards compatible
 variant is available.
 
-# Specification
+## Specification
 
-$signing_spec does not rely on Canonical JSON or any other encoding /
-canonicalization. Instead, the producer records the signed bytes
+$signing_spec does not rely on Canonical JSON nor any other encoding or
+canonicalization scheme. Instead, the producer records the signed bytes
 exactly as signed and the consumer verifies those exact bytes before parsing. In
 addition, the signature now includes an authenticated `payloadType` field
 indicating how to interpret the payload.
@@ -57,7 +56,7 @@ resource, nor does such a resource need to be fetched. Examples:
 The switch from Hex to Base64 for `sig` is to save space and to be consistent
 with `payload`.
 
-## Steps
+### Steps
 
 To sign:
 
@@ -79,7 +78,7 @@ To verify:
 Either standard or URL-safe base64 encodings are allowed. Signers may use
 either, and verifiers must accept either.
 
-## Backwards compatible signatures
+### Backwards compatible signatures
 
 To convert existing signatures from the current format to the new format,
 `"backwards-compatible-json"` must be added to the payload type URI to indicate
@@ -127,7 +126,7 @@ This scheme is safe from rollback attacks because the first byte of
 SERIALIZED_BODY must be 0x7b (`{`) in backwards compatibility mode and 0x02 in
 regular mode.
 
-## Optional changes to wrapper
+### Optional changes to wrapper
 
 The standard wrapper is JSON with an explicit `payloadType`. Optionally,
 applications may encode the wrapper in other methods without invalidating the
@@ -140,12 +139,12 @@ signature:
 At this point we do not standardize any other encoding. If a need arises, we may
 do so in the future.
 
-## Differentiating between old and new formats
+### Differentiating between old and new formats
 
 Verifiers can differentiate between the old and new wrapper format by detecting
 the presence of the `payload` field vs `signed` field.
 
-# Motivation
+## Motivation
 
 There are two concerns with the current in-toto/TUF signature wrapper.
 
@@ -179,7 +178,7 @@ such a vulnerability. The signature scheme should be resilient against these
 classes of attacks. See [example attack](hypothetical_signature_attack.ipynb)
 for more details.
 
-# Reasoning
+## Reasoning
 
 Our goal was to create a signature wrapper that is as simple and foolproof as
 possible. Alternatives such as [JWS] are extremely complex and error-prone,
@@ -208,7 +207,7 @@ Rationales for specific decisions:
 
 -   Why use PAE?
 
-    -   Because we need an unambiguous way to serializing two fields,
+    -   Because we need an unambiguous way of serializing two fields,
         payloadType and payload. PAE is already documented and good enough. No
         need to reinvent the wheel.
 
@@ -248,9 +247,9 @@ Rationales for specific decisions:
     2.  It would incur double base64 encoding overhead for non-JSON payloads.
     3.  It is more complex than PAE.
 
-# Backwards Compatibility
+## Backwards Compatibility
 
-## Current format
+### Current format
 
 The
 [current signature format](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
@@ -270,7 +269,7 @@ used by TUF and in-toto has a BODY that is a regular JSON object and a signature
 To verify, the consumer parses the whole JSON file, re-serializes BODY using
 Canonical JSON, then verifies the signature.
 
-## Detect if a document is using old format
+### Detect if a document is using old format
 
 To detect whether a signature is in the old or new format:
 
@@ -288,9 +287,7 @@ To convert a backwards compatible signature to the old format:
 -   `old.signed = jsonparse(base64decode(new.payload))`
 -   `old.signatures[*].sig = hexencode(base64decode(new.signatures[*].sig))`
 
-# Security
-
-# Testing
+## Testing
 
 See [reference implementation](reference_implementation.ipynb). Here is an
 example.
@@ -334,11 +331,9 @@ Signed wrapper:
  "signatures": [{"sig": "y7BK8Mm8Mr4gxk4+G9X3BD1iBc/vVVuJuV4ubmsEK4m/8MhQOOS26ejx+weIjyAx8VjYoZRPpoXSNjHEzdE7nQ=="}]}
 ```
 
-# Infrastructure Requirements
+## References
 
-# References
-
-[Canonical JSON]: http://gibson042.github.io/canonicaljson-spec/
-[JWS]: https://tools.ietf.org/html/rfc7515
-[PASETO]: https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig
+- [Canonical JSON](http://wiki.laptop.org/go/Canonical_JSON)
+- [JWS](https://tools.ietf.org/html/rfc7515)
+- [PASETO](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig)
 
