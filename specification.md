@@ -43,10 +43,10 @@ le64(n) := 64-bit little-endian encoding of `n`, where 0 <= n < 2^63
 ```
 
 The PAYLOAD_TYPE is a URI indicating how to interpret SERIALIZED_BODY. It
-encompasses the content type (JSON, CBOR, etc.), the purpose, and the schema
-version of the payload. This obviates the need for the `_type` field within
-in-toto/TUF payloads. This URI does not need to be resolved to a remote
-resource, nor does such a resource need to be fetched. Examples:
+encompasses the content type (JSON, Canonical-JSON, CBOR, etc.), the purpose,
+and the schema version of the payload. This obviates the need for the `_type`
+field within in-toto/TUF payloads. This URI does not need to be resolved to a
+remote resource, nor does such a resource need to be fetched. Examples:
 
 -   https://in-toto.io/Link/v0.9
 -   https://in-toto.io/Layout/v0.9
