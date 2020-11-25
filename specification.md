@@ -17,11 +17,11 @@ variant is available.
 
 ## Specification
 
-$signing_spec does not rely on Canonical JSON nor any other encoding or
-canonicalization scheme. Instead, the producer records the signed bytes
-exactly as signed and the consumer verifies those exact bytes before parsing. In
-addition, the signature now includes an authenticated `payloadType` field
-indicating how to interpret the payload.
+$signing_spec does not rely on Canonical JSON, nor any other canonicalization
+scheme. Instead, the producer records the signed bytes exactly as signed and the
+consumer verifies those exact bytes before parsing. In addition, the signature
+now includes an authenticated `payloadType` field indicating how to interpret
+the payload.
 
 ```json
 {
