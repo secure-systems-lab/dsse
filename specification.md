@@ -68,6 +68,9 @@ To sign:
 
 To verify:
 
+-   If `payloadType` == `https://in-toto.io/backwards-compatible-json`, use the
+    [backwards compatible verification process](#backwards-compatible-signatures)
+    instead of this one.
 -   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
     fails.
 -   Base64-decode `sig` and verify PAE([PAYLOAD_TYPE, SERIALIZED_BODY]). Reject
@@ -80,15 +83,15 @@ either, and verifiers must accept either.
 
 ### Backwards compatible signatures
 
-To convert existing signatures from the current format to the new format,
-`"backwards-compatible-json"` must be added to the payload type URI to indicate
-that the signature is over the raw payload. This allows the signatures to remain
-valid while avoiding the verifier from having to use [Canonical JSON].
+To convert existing in-toto and TUF signatures from the old format to the new
+format, use payloadType `"https://in-toto.io/backwards-compatible-json"` to
+indicate that the signature is over the raw payload. This allows the signatures
+to remain valid while avoiding the verifier from having to use [Canonical JSON].
 
 ```json
 {
   "payload": "<Base64(CanonicalJson(BODY))>",
-  "payloadType": "<URI>/backwards-compatible-json",
+  "payloadType": "https://in-toto.io/backwards-compatible-json",
   "signatures" : [{
     …,
     "sig" : "<Base64(Sign(CanonicalJson(BODY)))>"
@@ -104,12 +107,14 @@ To sign:
 -   Serialize BODY as [Canonical JSON]; call this SERIALIZED_BODY.
 -   Sign SERIALIZED_BODY, base64-encode the result, and store it in `sig`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
--   Store `"<URI>/backwards-compatible-json"` in `payloadType`.
+-   Store `"https://in-toto.io/backwards-compatible-json"` in `payloadType`.
 
 To verify:
 
--   If `payloadType` != `"<URI>/backwards-compatible-json"`, use the normal
-    verification process instead of this one.
+-   If `payloadType` != `"https://in-toto.io/backwards-compatible-json"`, use
+    the [normal verification process](#steps) instead of this one.
+-   **Important:** Only proceed if backwards compatibility is necessary. Such
+    signatures should **not** be accepted by default.
 -   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
     fails.
 -   Base64-decode `sig` and verify SERIALIZED_BODY. Reject if either the
@@ -222,8 +227,8 @@ Rationales for specific decisions:
         payloadType were not signed.
     -   Also, URIs don't need to be registered while Media Types do.
 
--   Why use payloadType "backwards-compatible-json" instead of assuming
-    backwards compatible mode if payloadType is absent?
+-   Why use payloadType "https://in-toto.io/backwards-compatible-json" instead
+    of assuming backwards compatible mode if payloadType is absent?
 
     -   We wanted to leave open the possibility of having an
         application-specific "default" value if payloadType is unspecified,
