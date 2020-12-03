@@ -15,7 +15,7 @@ misinterpretation of the payload. The serialized payload is encoded as a string
 and verified by the recipient _before_ deserializing. A backwards compatible
 variant is available.
 
-## Specification
+## Overview
 
 $signing_spec does not rely on Canonical JSON, nor any other canonicalization
 scheme. Instead, the producer records the signed bytes exactly as signed and the
@@ -23,46 +23,64 @@ consumer verifies those exact bytes before parsing. In addition, the signature
 now includes an authenticated `payloadType` field indicating how to interpret
 the payload.
 
+## Specification
+
+The signature format is a JSON message of the following form:
+
 ```json
 {
   "payload": "<Base64(SERIALIZED_BODY)>",
   "payloadType": "<PAYLOAD_TYPE>",
   "signatures": [{
     …,
-    "sig": "<Base64(Sign(PAE([PAYLOAD_TYPE, SERIALIZED_BODY])))>"
+    "sig": "<Base64(Sign(PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY])))>"
   }, …]
 }
 ```
 
-where PAE is the
-[PASETO Pre-Authentication Encoding](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding):
+where:
 
-```none
-PAE([type, body]) := le64(2) || le64(len(type)) || type || le64(len(body)) || body
-le64(n) := 64-bit little-endian encoding of `n`, where 0 <= n < 2^63
-```
+*   SERIALIZED_BODY is the byte sequence to be signed.
 
-The PAYLOAD_TYPE is a URI indicating how to interpret SERIALIZED_BODY. It
-encompasses the content type (JSON, Canonical-JSON, CBOR, etc.), the purpose,
-and the schema version of the payload. This obviates the need for the `_type`
-field within in-toto/TUF payloads. This URI does not need to be resolved to a
-remote resource, nor does such a resource need to be fetched. Examples:
+*   PAYLOAD_TYPE is a URI indicating how to interpret SERIALIZED_BODY. It
+    encompasses the content type (JSON, Canonical-JSON, CBOR, etc.), the
+    purpose, and the schema version of the payload. This obviates the need for
+    the `_type` field within in-toto/TUF payloads. This URI does not need to be
+    resolved to a remote resource, nor does such a resource need to be fetched.
+    Examples:
 
--   https://in-toto.io/Link/v0.9
--   https://in-toto.io/Layout/v0.9
--   https://theupdateframework.com/Root/v1.0.5
--   etc...
+    -   https://in-toto.io/Link/v0.9
+    -   https://in-toto.io/Layout/v0.9
+    -   https://theupdateframework.com/Root/v1.0.5
+    -   etc...
 
-The switch from Hex to Base64 for `sig` is to save space and to be consistent
-with `payload`.
+*   PAE() is the
+    [PASETO Pre-Authentication Encoding](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding),
+    where parameters `type` and `body` are byte sequences:
+
+    ```none
+    PAE([type, body]) := le64(2) || le64(len(type)) || type || le64(len(body)) || body
+    le64(n) := 64-bit little-endian encoding of `n`, where 0 <= n < 2^63
+    ```
+
+*   Sign() is an arbitrary digital signature format. Details must be agreed upon
+    out-of-band by the signer and verifier. This specification places no
+    restriction on the signature algorithm or format.
+
+*   UTF8() is [UTF-8 encoding](https://tools.ietf.org/html/rfc3629),
+    transforming a unicode string to a byte sequence.
+
+*   Base64() is [Base64 encoding](https://tools.ietf.org/html/rfc4648),
+    transforming a byte sequence to a unicode string. Either standard or
+    URL-safe encoding is allowed.
 
 ### Steps
 
 To sign:
 
 -   Serialize BODY according to PAYLOAD_TYPE. Call the result SERIALIZED_BODY.
--   Sign PAE([PAYLOAD_TYPE, SERIALIZED_BODY]), base64-encode the result, and
-    store it in `sig`.
+-   Sign PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY]), base64-encode the result,
+    and store it in `sig`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
 -   Store PAYLOAD_TYPE in `payloadType`.
 
@@ -70,8 +88,8 @@ To verify:
 
 -   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
     fails.
--   Base64-decode `sig` and verify PAE([PAYLOAD_TYPE, SERIALIZED_BODY]). Reject
-    if either the decoding or the signature verification fails.
+-   Base64-decode `sig` and verify PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY]).
+    Reject if either the decoding or the signature verification fails.
 -   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
     fails.
 
@@ -336,4 +354,3 @@ Signed wrapper:
 - [Canonical JSON](http://wiki.laptop.org/go/Canonical_JSON)
 - [JWS](https://tools.ietf.org/html/rfc7515)
 - [PASETO](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig)
-
