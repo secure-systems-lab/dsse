@@ -83,7 +83,7 @@ either, and verifiers must accept either.
 To convert existing signatures from the current format to the new format,
 `"backwards-compatible-json"` must be added to the payload type URI to indicate
 that the signature is over the raw payload. This allows the signatures to remain
-valid while avoiding the verifier from having to use CanonicalJson.
+valid while avoiding the verifier from having to use [Canonical JSON].
 
 ```json
 {
@@ -101,7 +101,7 @@ Support for this backwards compatibility mode is optional.
 To sign:
 
 -   BODY **must** be an object type (`{...}`).
--   Serialize BODY as Canonical JSON; call this SERIALIZED_BODY.
+-   Serialize BODY as [Canonical JSON]; call this SERIALIZED_BODY.
 -   Sign SERIALIZED_BODY, base64-encode the result, and store it in `sig`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
 -   Store `"<URI>/backwards-compatible-json"` in `payloadType`.
@@ -333,7 +333,10 @@ Signed wrapper:
 
 ## References
 
-- [Canonical JSON](http://wiki.laptop.org/go/Canonical_JSON)
-- [JWS](https://tools.ietf.org/html/rfc7515)
-- [PASETO](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig)
+- [Canonical JSON]
+- [JWS]
+- [PASETO]
 
+[Canonical JSON]: http://wiki.laptop.org/go/Canonical_JSON
+[JWS]: https://tools.ietf.org/html/rfc7515
+[PASETO]: https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig
