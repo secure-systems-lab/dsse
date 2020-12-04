@@ -40,23 +40,27 @@ The signature format is a JSON message of the following form:
 ```
 
 Empty fields may be omitted. [Multiple signatures](#multiple-signatures) are
-allowed.
+allowed. Note that an optional `signature.sigType` field may be present but
+empty for compatibility with [backwards compatible signature] mode.
 
 Parameters:
 
 *   SERIALIZED_BODY is the byte sequence to be signed.
 
-*   PAYLOAD_TYPE is a URI indicating how to interpret SERIALIZED_BODY. It
-    encompasses the content type (JSON, Canonical-JSON, CBOR, etc.), the
-    purpose, and the schema version of the payload. This obviates the need for
-    the `_type` field within in-toto/TUF payloads. This URI does not need to be
-    resolved to a remote resource, nor does such a resource need to be fetched.
-    Examples:
+*   PAYLOAD_TYPE is an authenticated(*) URI indicating how to interpret
+    SERIALIZED_BODY. It encompasses the content type (JSON, Canonical-JSON,
+    CBOR, etc.), the purpose, and the schema version of the payload. This
+    obviates the need for the `_type` field within in-toto/TUF payloads. This
+    URI does not need to be resolved to a remote resource, nor does such a
+    resource need to be fetched. Examples:
 
     -   https://in-toto.io/Link/v0.9
     -   https://in-toto.io/Layout/v0.9
     -   https://theupdateframework.com/Root/v1.0.5
     -   etc...
+
+    (*) Exception: PAYLOAD_TYPE is unauthenticated if `signature.sigType ==
+    "raw-json-no-payload-type"`.
 
 *   KEYID is an optional, unauthenticated hint indicating what key was used to
     sign the message. It **must not** be used for security decisions.
@@ -102,6 +106,9 @@ To sign:
 
 To verify:
 
+-   If `sigType == "raw-json-no-payload-type"`, use
+    [backwards compatible signature] instead. Reject if `sigType` is any other
+    non-empty value.
 -   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
     fails.
 -   Base64-decode `sig` and verify PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY).
@@ -122,30 +129,31 @@ valid while avoiding the verifier from having to use [Canonical JSON].
 
 ```json
 {
-  "payload": "<Base64(CanonicalJson(BODY))>",
-  "payloadType": "<URI>/backwards-compatible-json",
+  "payload": "<Base64(SERIALIZED_BODY)>",
   "signatures" : [{
     "keyid": "<KEYID>",
-    "sig": "<Base64(Sign(CanonicalJson(BODY)))>"
+    "sigType": "raw-json-no-payload-type",
+    "sig" : "<Base64(Sign(SERIALIZED_BODY))>"
   }]
 }
 ```
 
-Support for this backwards compatibility mode is optional.
+Support for this backwards compatibility mode is optional and should be disabled
+by default.
 
 To sign:
 
--   BODY **must** be an object type (`{...}`).
--   Serialize BODY as [Canonical JSON]; call this SERIALIZED_BODY.
+-   The message **must** be an object type (`{...}`).
+-   Serialize the message as [Canonical JSON]; call this SERIALIZED_BODY.
 -   Sign SERIALIZED_BODY, base64-encode the result, and store it in `sig`.
+-   Store `"raw-json-no-payload-type"` in `sigType`.
 -   Optionally, compute a KEYID and store it in `keyid`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
--   Store `"<URI>/backwards-compatible-json"` in `payloadType`.
 
 To verify:
 
--   If `payloadType` != `"<URI>/backwards-compatible-json"`, use the normal
-    verification process instead of this one.
+-   If `sigType != "raw-json-no-payload-type"`, use the
+    [normal verification process](#steps) instead of this one.
 -   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
     fails.
 -   Base64-decode `sig` and verify SERIALIZED_BODY. Reject if either the
@@ -154,6 +162,7 @@ To verify:
     the result is not a JSON object. In particular, the first byte of
     SERIALIZED_BODY must be `{`. Verifiers **must not** require SERIALIZED_BODY
     to be Canonical JSON.
+-   Discard `payloadType` if present.
 
 Backwards compatible signatures are not recommended because they lack the
 authenticated payloadType indicator.
@@ -334,17 +343,19 @@ To detect whether a signature is in the old or new format:
 To convert an existing signature to the new format:
 
 -   `new.payload = base64encode(CanonicalJson(orig.signed))`
--   `new.payloadType = "<URI>/backwards-compatible-json"`
+-   `new.signatures[*].sigType = "raw-json-no-payload-type"`
 -   `new.signatures[*].sig = base64encode(hexdecode(orig.signatures[*].sig))`
 -   `new.signatures[*].keyid = orig.signatures[*].keyid`
 
-To convert a backwards compatible signature to the old format:
+To convert a [backwards compatible signature] to the old format:
 
 -   `old.signed = jsonparse(base64decode(new.payload))`
 -   `old.signatures[*].sig = hexencode(base64decode(new.signatures[*].sig))`
 -   `old.signatures[*].keyid = new.signatures[*].keyid`
 
 ## Testing
+
+TODO: Update reference implementation with this new design.
 
 See [reference implementation](reference_implementation.ipynb). Here is an
 example.
