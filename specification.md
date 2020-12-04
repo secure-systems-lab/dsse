@@ -32,13 +32,15 @@ The signature format is a JSON message of the following form:
   "payload": "<Base64(SERIALIZED_BODY)>",
   "payloadType": "<PAYLOAD_TYPE>",
   "signatures": [{
-    …,
+    "keyid": "<KEYID>",
     "sig": "<Base64(Sign(PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY])))>"
   }, …]
 }
 ```
 
-where:
+Empty fields may be omitted. Multiple signatures are allowed.
+
+Definitions:
 
 *   SERIALIZED_BODY is the byte sequence to be signed.
 
@@ -53,6 +55,9 @@ where:
     -   https://in-toto.io/Layout/v0.9
     -   https://theupdateframework.com/Root/v1.0.5
     -   etc...
+
+*   KEYID is an optional, unauthenticated hint indicating what key was used to
+    sign the message. It **must not** be used for security decisions.
 
 *   PAE() is the
     [PASETO Pre-Authentication Encoding](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding),
@@ -81,6 +86,7 @@ To sign:
 -   Serialize BODY according to PAYLOAD_TYPE. Call the result SERIALIZED_BODY.
 -   Sign PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY]), base64-encode the result,
     and store it in `sig`.
+-   Optionally, compute a KEYID and store it in `keyid`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
 -   Store PAYLOAD_TYPE in `payloadType`.
 
@@ -278,7 +284,7 @@ used by TUF and in-toto has a BODY that is a regular JSON object and a signature
 {
   "signed": <BODY>,
   "signatures": [{
-    …,
+    "keyid": "<KEYID>",
     "sig": "<Hex(Sign(CanonicalJson(BODY)))>"
   }, …]
 }
@@ -299,11 +305,13 @@ To convert an existing signature to the new format:
 -   `new.payload = base64encode(CanonicalJson(orig.signed))`
 -   `new.payloadType = "<URI>/backwards-compatible-json"`
 -   `new.signatures[*].sig = base64encode(hexdecode(orig.signatures[*].sig))`
+-   `new.signatures[*].keyid = orig.signatures[*].keyid`
 
 To convert a backwards compatible signature to the old format:
 
 -   `old.signed = jsonparse(base64decode(new.payload))`
 -   `old.signatures[*].sig = hexencode(base64decode(new.signatures[*].sig))`
+-   `old.signatures[*].keyid = new.signatures[*].keyid`
 
 ## Testing
 
