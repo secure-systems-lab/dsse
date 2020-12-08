@@ -41,7 +41,7 @@ The signature format is a JSON message of the following form:
 Empty fields may be omitted. [Multiple signatures](#multiple-signatures) are
 allowed.
 
-Definitions:
+Parameters:
 
 *   SERIALIZED_BODY is the byte sequence to be signed.
 
@@ -59,6 +59,8 @@ Definitions:
 
 *   KEYID is an optional, unauthenticated hint indicating what key was used to
     sign the message. It **must not** be used for security decisions.
+
+Functions:
 
 *   PAE() is the
     [PASETO Pre-Authentication Encoding](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding),
