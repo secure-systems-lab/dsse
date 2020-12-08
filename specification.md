@@ -34,11 +34,12 @@ The signature format is a JSON message of the following form:
   "signatures": [{
     "keyid": "<KEYID>",
     "sig": "<Base64(Sign(PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY])))>"
-  }, …]
+  }]
 }
 ```
 
-Empty fields may be omitted. Multiple signatures are allowed.
+Empty fields may be omitted. [Multiple signatures](#multiple-signatures) are
+allowed.
 
 Definitions:
 
@@ -149,6 +150,25 @@ authenticated payloadType indicator.
 This scheme is safe from rollback attacks because the first byte of
 SERIALIZED_BODY must be 0x7b (`{`) in backwards compatibility mode and 0x02 in
 regular mode.
+
+### Multiple signatures
+
+A file may have more than one signature, which is equivalent to separate files
+with individual signatures.
+
+```json
+{
+  "payload": "<Base64(SERIALIZED_BODY)>",
+  "payloadType": "<PAYLOAD_TYPE>",
+  "signatures": [{
+      "keyid": "<KEYID_1>",
+      "sig": "<SIG_1>"
+    }, {
+      "keyid": "<KEYID_2>",
+      "sig": "<SIG_2>"
+  }]
+}
+```
 
 ### Optional changes to wrapper
 
@@ -286,7 +306,7 @@ used by TUF and in-toto has a BODY that is a regular JSON object and a signature
   "signatures": [{
     "keyid": "<KEYID>",
     "sig": "<Hex(Sign(CanonicalJson(BODY)))>"
-  }, …]
+  }]
 }
 ```
 
