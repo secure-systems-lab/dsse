@@ -84,9 +84,10 @@ Out of band:
 
 To sign:
 
--   Serialize BODY according to PAYLOAD_TYPE. Call the result SERIALIZED_BODY.
--   Sign PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY), base64-encode the result,
-    and store it in `sig`.
+-   Serialize the message according to PAYLOAD_TYPE. Call the result
+    SERIALIZED_BODY.
+-   Sign PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY), base64-encode the result, and
+    store it in `sig`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
 -   Store PAYLOAD_TYPE in `payloadType`.
 
@@ -317,7 +318,7 @@ To convert a backwards compatible signature to the old format:
 See [reference implementation](reference_implementation.ipynb). Here is an
 example.
 
-BODY:
+SERIALIZED_BODY:
 
 ```none
 hello world
