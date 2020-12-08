@@ -272,12 +272,12 @@ Rationales for specific decisions:
     2.  It would incur double base64 encoding overhead for non-JSON payloads.
     3.  It is more complex than PAE.
 
-## Backwards Compatibility
+## Backwards compatibility with existing TUF and in-toto signatures
 
 ### Current format
 
 The
-[current signature format](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
+[old signature format](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
 used by TUF and in-toto has a BODY that is a regular JSON object and a signature
 over the [Canonical JSON] serialization of BODY.
 
