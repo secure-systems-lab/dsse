@@ -115,9 +115,9 @@ valid while avoiding the verifier from having to use [Canonical JSON].
   "payload": "<Base64(CanonicalJson(BODY))>",
   "payloadType": "<URI>/backwards-compatible-json",
   "signatures" : [{
-    …,
-    "sig" : "<Base64(Sign(CanonicalJson(BODY)))>"
-  }, …]
+    "keyid": "<KEYID>",
+    "sig": "<Base64(Sign(CanonicalJson(BODY)))>"
+  }]
 }
 ```
 
@@ -128,6 +128,7 @@ To sign:
 -   BODY **must** be an object type (`{...}`).
 -   Serialize BODY as [Canonical JSON]; call this SERIALIZED_BODY.
 -   Sign SERIALIZED_BODY, base64-encode the result, and store it in `sig`.
+-   Optionally, compute a KEYID and store it in `keyid`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
 -   Store `"<URI>/backwards-compatible-json"` in `payloadType`.
 
