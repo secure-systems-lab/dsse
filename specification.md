@@ -34,7 +34,7 @@ The signature format is a JSON message of the following form:
   "payloadType": "<PAYLOAD_TYPE>",
   "signatures": [{
     …,
-    "sig": "<Base64(Sign(PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY])))>"
+    "sig": "<Base64(Sign(PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY)))>"
   }, …]
 }
 ```
@@ -60,7 +60,7 @@ where:
     where parameters `type` and `body` are byte sequences:
 
     ```none
-    PAE([type, body]) := le64(2) || le64(len(type)) || type || le64(len(body)) || body
+    PAE(type, body) := le64(2) || le64(len(type)) || type || le64(len(body)) || body
     le64(n) := 64-bit little-endian encoding of `n`, where 0 <= n < 2^63
     ```
 
@@ -80,7 +80,7 @@ where:
 To sign:
 
 -   Serialize BODY according to PAYLOAD_TYPE. Call the result SERIALIZED_BODY.
--   Sign PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY]), base64-encode the result,
+-   Sign PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY), base64-encode the result,
     and store it in `sig`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
 -   Store PAYLOAD_TYPE in `payloadType`.
@@ -89,7 +89,7 @@ To verify:
 
 -   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
     fails.
--   Base64-decode `sig` and verify PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY]).
+-   Base64-decode `sig` and verify PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY).
     Reject if either the decoding or the signature verification fails.
 -   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
     fails.
