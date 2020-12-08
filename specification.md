@@ -77,6 +77,11 @@ where:
 
 ### Steps
 
+Out of band:
+
+-   Agree on a PAYLOAD_TYPE and cryptographic details.
+-   Decide if [backwards compatible signature] mode should be allowed.
+
 To sign:
 
 -   Serialize BODY according to PAYLOAD_TYPE. Call the result SERIALIZED_BODY.
@@ -91,6 +96,7 @@ To verify:
     fails.
 -   Base64-decode `sig` and verify PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY).
     Reject if either the decoding or the signature verification fails.
+-   Reject if PAYLOAD_TYPE is not a supported type.
 -   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
     fails.
 
@@ -356,6 +362,7 @@ Signed wrapper:
 -   [JWS]
 -   [PASETO]
 
+[backwards compatible signature]: #backwards-compatible-signatures
 [Canonical JSON]: http://wiki.laptop.org/go/Canonical_JSON
 [JWS]: https://tools.ietf.org/html/rfc7515
 [PASETO]: https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig
