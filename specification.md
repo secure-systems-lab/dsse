@@ -1,6 +1,7 @@
 # $signing_spec
 
-A signature scheme for software supply chain metadata that avoids canonicalization
+A signature scheme for software supply chain metadata that avoids
+canonicalization
 
 November 25, 2020
 
@@ -271,8 +272,8 @@ Rationales for specific decisions:
 
 The
 [current signature format](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
-used by TUF and in-toto has a BODY that is a regular JSON object and a signature over the
-[Canonical JSON] serialization of BODY.
+used by TUF and in-toto has a BODY that is a regular JSON object and a signature
+over the [Canonical JSON] serialization of BODY.
 
 ```json
 {
@@ -351,9 +352,9 @@ Signed wrapper:
 
 ## References
 
-- [Canonical JSON]
-- [JWS]
-- [PASETO]
+-   [Canonical JSON]
+-   [JWS]
+-   [PASETO]
 
 [Canonical JSON]: http://wiki.laptop.org/go/Canonical_JSON
 [JWS]: https://tools.ietf.org/html/rfc7515
