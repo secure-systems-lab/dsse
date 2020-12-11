@@ -57,8 +57,11 @@ Parameters:
     -   https://theupdateframework.com/Root/v1.0.5
     -   etc...
 
-*   KEYID is an optional, unauthenticated hint indicating what key was used to
-    sign the message. It **MUST NOT** be used for security decisions.
+*   KEYID is an optional, unauthenticated hint indicating what key and algorithm
+    was used to sign the message. As with Sign(), details are agreed upon
+    out-of-band by the signer and verifier. It **MUST NOT** be used for security
+    decisions; it may only be used to narrow the selection of possible keys to
+    try.
 
 Functions:
 
