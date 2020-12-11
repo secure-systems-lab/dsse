@@ -154,7 +154,7 @@ Backwards compatible signatures are not recommended because they lack the
 authenticated payloadType indicator.
 
 This scheme is safe from rollback attacks because the first byte of
-SERIALIZED_BODY is be 0x7b (`{`) in backwards compatibility mode and 0x02 in
+SERIALIZED_BODY is 0x7b (`{`) in backwards compatibility mode and 0x02 in
 regular mode.
 
 ### Multiple signatures
