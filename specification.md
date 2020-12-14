@@ -1,6 +1,7 @@
 # $signing_spec
 
-A signature scheme for software supply chain metadata that avoids canonicalization
+A signature scheme for software supply chain metadata that avoids
+canonicalization
 
 November 25, 2020
 
@@ -33,7 +34,7 @@ The signature format is a JSON message of the following form:
   "payloadType": "<PAYLOAD_TYPE>",
   "signatures": [{
     "keyid": "<KEYID>",
-    "sig": "<Base64(Sign(PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY])))>"
+    "sig": "<Base64(Sign(PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY)))>"
   }]
 }
 ```
@@ -70,7 +71,7 @@ Functions:
     where parameters `type` and `body` are byte sequences:
 
     ```none
-    PAE([type, body]) := le64(2) || le64(len(type)) || type || le64(len(body)) || body
+    PAE(type, body) := le64(2) || le64(len(type)) || type || le64(len(body)) || body
     le64(n) := 64-bit little-endian encoding of `n`, where 0 <= n < 2^63
     ```
 
@@ -87,11 +88,17 @@ Functions:
 
 ### Steps
 
+Out of band:
+
+-   Agree on a PAYLOAD_TYPE and cryptographic details.
+-   Decide if [backwards compatible signature] mode should be allowed.
+
 To sign:
 
--   Serialize BODY according to PAYLOAD_TYPE. Call the result SERIALIZED_BODY.
--   Sign PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY]), base64-encode the result,
-    and store it in `sig`.
+-   Serialize the message according to PAYLOAD_TYPE. Call the result
+    SERIALIZED_BODY.
+-   Sign PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY), base64-encode the result, and
+    store it in `sig`.
 -   Optionally, compute a KEYID and store it in `keyid`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
 -   Store PAYLOAD_TYPE in `payloadType`.
@@ -100,8 +107,9 @@ To verify:
 
 -   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
     fails.
--   Base64-decode `sig` and verify PAE([UTF8(PAYLOAD_TYPE), SERIALIZED_BODY]).
+-   Base64-decode `sig` and verify PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY).
     Reject if either the decoding or the signature verification fails.
+-   Reject if PAYLOAD_TYPE is not a supported type.
 -   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
     fails.
 
@@ -297,14 +305,14 @@ Rationales for specific decisions:
     2.  It would incur double base64 encoding overhead for non-JSON payloads.
     3.  It is more complex than PAE.
 
-## Backwards Compatibility
+## Backwards compatibility with existing TUF and in-toto signatures
 
 ### Current format
 
 The
-[current signature format](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
-used by TUF and in-toto has a BODY that is a regular JSON object and a signature over the
-[Canonical JSON] serialization of BODY.
+[old signature format](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
+used by TUF and in-toto has a BODY that is a regular JSON object and a signature
+over the [Canonical JSON] serialization of BODY.
 
 ```json
 {
@@ -344,7 +352,7 @@ To convert a backwards compatible signature to the old format:
 See [reference implementation](reference_implementation.ipynb). Here is an
 example.
 
-BODY:
+SERIALIZED_BODY:
 
 ```none
 hello world
@@ -385,10 +393,11 @@ Signed wrapper:
 
 ## References
 
-- [Canonical JSON]
-- [JWS]
-- [PASETO]
+-   [Canonical JSON]
+-   [JWS]
+-   [PASETO]
 
+[backwards compatible signature]: #backwards-compatible-signatures
 [Canonical JSON]: http://wiki.laptop.org/go/Canonical_JSON
 [JWS]: https://tools.ietf.org/html/rfc7515
 [PASETO]: https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig
