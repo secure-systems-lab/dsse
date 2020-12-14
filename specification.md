@@ -33,13 +33,16 @@ The signature format is a JSON message of the following form:
   "payload": "<Base64(SERIALIZED_BODY)>",
   "payloadType": "<PAYLOAD_TYPE>",
   "signatures": [{
-    …,
+    "keyid": "<KEYID>",
     "sig": "<Base64(Sign(PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY)))>"
-  }, …]
+  }]
 }
 ```
 
-where:
+Empty fields may be omitted. [Multiple signatures](#multiple-signatures) are
+allowed.
+
+Parameters:
 
 *   SERIALIZED_BODY is the byte sequence to be signed.
 
@@ -55,6 +58,14 @@ where:
     -   https://theupdateframework.com/Root/v1.0.5
     -   etc...
 
+*   KEYID is an optional, unauthenticated hint indicating what key and algorithm
+    was used to sign the message. As with Sign(), details are agreed upon
+    out-of-band by the signer and verifier. It **MUST NOT** be used for security
+    decisions; it may only be used to narrow the selection of possible keys to
+    try.
+
+Functions:
+
 *   PAE() is the
     [PASETO Pre-Authentication Encoding](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding),
     where parameters `type` and `body` are byte sequences:
@@ -64,7 +75,7 @@ where:
     le64(n) := 64-bit little-endian encoding of `n`, where 0 <= n < 2^63
     ```
 
-*   Sign() is an arbitrary digital signature format. Details must be agreed upon
+*   Sign() is an arbitrary digital signature format. Details are agreed upon
     out-of-band by the signer and verifier. This specification places no
     restriction on the signature algorithm or format.
 
@@ -88,6 +99,7 @@ To sign:
     SERIALIZED_BODY.
 -   Sign PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY), base64-encode the result, and
     store it in `sig`.
+-   Optionally, compute a KEYID and store it in `keyid`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
 -   Store PAYLOAD_TYPE in `payloadType`.
 
@@ -102,13 +114,13 @@ To verify:
     fails.
 
 Either standard or URL-safe base64 encodings are allowed. Signers may use
-either, and verifiers must accept either.
+either, and verifiers **MUST** accept either.
 
 ### Backwards compatible signatures
 
 To convert existing signatures from the current format to the new format,
-`"backwards-compatible-json"` must be added to the payload type URI to indicate
-that the signature is over the raw payload. This allows the signatures to remain
+`"backwards-compatible-json"` is added to the payload type URI to indicate that
+the signature is over the raw payload. This allows the signatures to remain
 valid while avoiding the verifier from having to use [Canonical JSON].
 
 ```json
@@ -116,9 +128,9 @@ valid while avoiding the verifier from having to use [Canonical JSON].
   "payload": "<Base64(CanonicalJson(BODY))>",
   "payloadType": "<URI>/backwards-compatible-json",
   "signatures" : [{
-    …,
-    "sig" : "<Base64(Sign(CanonicalJson(BODY)))>"
-  }, …]
+    "keyid": "<KEYID>",
+    "sig": "<Base64(Sign(CanonicalJson(BODY)))>"
+  }]
 }
 ```
 
@@ -126,9 +138,10 @@ Support for this backwards compatibility mode is optional.
 
 To sign:
 
--   BODY **must** be an object type (`{...}`).
+-   BODY **MUST** be an object type (`{...}`).
 -   Serialize BODY as [Canonical JSON]; call this SERIALIZED_BODY.
 -   Sign SERIALIZED_BODY, base64-encode the result, and store it in `sig`.
+-   Optionally, compute a KEYID and store it in `keyid`.
 -   Base64-encode SERIALIZED_BODY and store it in `payload`.
 -   Store `"<URI>/backwards-compatible-json"` in `payloadType`.
 
@@ -142,15 +155,34 @@ To verify:
     decoding or the signature verification fails.
 -   Parse SERIALIZED_BODY as a JSON object. Reject if the parsing fails or if
     the result is not a JSON object. In particular, the first byte of
-    SERIALIZED_BODY must be `{`. Verifiers **must not** require SERIALIZED_BODY
+    SERIALIZED_BODY **MUST** be `{`. Verifiers **MUST NOT** require SERIALIZED_BODY
     to be Canonical JSON.
 
 Backwards compatible signatures are not recommended because they lack the
 authenticated payloadType indicator.
 
 This scheme is safe from rollback attacks because the first byte of
-SERIALIZED_BODY must be 0x7b (`{`) in backwards compatibility mode and 0x02 in
+SERIALIZED_BODY is 0x7b (`{`) in backwards compatibility mode and 0x02 in
 regular mode.
+
+### Multiple signatures
+
+A file may have more than one signature, which is equivalent to separate files
+with individual signatures.
+
+```json
+{
+  "payload": "<Base64(SERIALIZED_BODY)>",
+  "payloadType": "<PAYLOAD_TYPE>",
+  "signatures": [{
+      "keyid": "<KEYID_1>",
+      "sig": "<SIG_1>"
+    }, {
+      "keyid": "<KEYID_2>",
+      "sig": "<SIG_2>"
+  }]
+}
+```
 
 ### Optional changes to wrapper
 
@@ -286,9 +318,9 @@ over the [Canonical JSON] serialization of BODY.
 {
   "signed": <BODY>,
   "signatures": [{
-    …,
+    "keyid": "<KEYID>",
     "sig": "<Hex(Sign(CanonicalJson(BODY)))>"
-  }, …]
+  }]
 }
 ```
 
@@ -307,11 +339,13 @@ To convert an existing signature to the new format:
 -   `new.payload = base64encode(CanonicalJson(orig.signed))`
 -   `new.payloadType = "<URI>/backwards-compatible-json"`
 -   `new.signatures[*].sig = base64encode(hexdecode(orig.signatures[*].sig))`
+-   `new.signatures[*].keyid = orig.signatures[*].keyid`
 
 To convert a backwards compatible signature to the old format:
 
 -   `old.signed = jsonparse(base64decode(new.payload))`
 -   `old.signatures[*].sig = hexencode(base64decode(new.signatures[*].sig))`
+-   `old.signatures[*].keyid = new.signatures[*].keyid`
 
 ## Testing
 
