@@ -62,8 +62,11 @@ Parameters:
     (*) Exception: PAYLOAD_TYPE is unauthenticated if `signature.sigType ==
     "raw-json-no-payload-type"`.
 
-*   KEYID is an optional, unauthenticated hint indicating what key was used to
-    sign the message. It **must not** be used for security decisions.
+*   KEYID is an optional, unauthenticated hint indicating what key and algorithm
+    was used to sign the message. As with Sign(), details are agreed upon
+    out-of-band by the signer and verifier. It **MUST NOT** be used for security
+    decisions; it may only be used to narrow the selection of possible keys to
+    try.
 
 Functions:
 
@@ -76,7 +79,7 @@ Functions:
     le64(n) := 64-bit little-endian encoding of `n`, where 0 <= n < 2^63
     ```
 
-*   Sign() is an arbitrary digital signature format. Details must be agreed upon
+*   Sign() is an arbitrary digital signature format. Details are agreed upon
     out-of-band by the signer and verifier. This specification places no
     restriction on the signature algorithm or format.
 
@@ -118,13 +121,13 @@ To verify:
     fails.
 
 Either standard or URL-safe base64 encodings are allowed. Signers may use
-either, and verifiers must accept either.
+either, and verifiers **MUST** accept either.
 
 ### Backwards compatible signatures
 
 To convert existing signatures from the current format to the new format,
-`"backwards-compatible-json"` must be added to the payload type URI to indicate
-that the signature is over the raw payload. This allows the signatures to remain
+`"backwards-compatible-json"` is added to the payload type URI to indicate that
+the signature is over the raw payload. This allows the signatures to remain
 valid while avoiding the verifier from having to use [Canonical JSON].
 
 ```json
@@ -143,7 +146,7 @@ by default.
 
 To sign:
 
--   The message **must** be an object type (`{...}`).
+-   The message **MUST** be an object type (`{...}`).
 -   Serialize the message as [Canonical JSON]; call this SERIALIZED_BODY.
 -   Sign SERIALIZED_BODY, base64-encode the result, and store it in `sig`.
 -   Store `"raw-json-no-payload-type"` in `sigType`.
@@ -160,7 +163,7 @@ To verify:
     decoding or the signature verification fails.
 -   Parse SERIALIZED_BODY as a JSON object. Reject if the parsing fails or if
     the result is not a JSON object. In particular, the first byte of
-    SERIALIZED_BODY must be `{`. Verifiers **must not** require SERIALIZED_BODY
+    SERIALIZED_BODY **MUST** be `{`. Verifiers **MUST NOT** require SERIALIZED_BODY
     to be Canonical JSON.
 -   Discard `payloadType` if present.
 
@@ -168,7 +171,7 @@ Backwards compatible signatures are not recommended because they lack the
 authenticated payloadType indicator.
 
 This scheme is safe from rollback attacks because the first byte of
-SERIALIZED_BODY must be 0x7b (`{`) in backwards compatibility mode and 0x02 in
+SERIALIZED_BODY is 0x7b (`{`) in backwards compatibility mode and 0x02 in
 regular mode.
 
 ### Multiple signatures
