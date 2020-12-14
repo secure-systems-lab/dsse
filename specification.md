@@ -358,8 +358,6 @@ To convert a [backwards compatible signature] to the old format:
 
 ## Testing
 
-TODO: Update reference implementation with this new design.
-
 See [reference implementation](reference_implementation.ipynb). Here is an
 example.
 
