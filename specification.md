@@ -126,7 +126,7 @@ either, and verifiers **MUST** accept either.
 ### Backwards compatible signatures
 
 To convert existing signatures from the current format to the new format,
-`"backwards-compatible-json"` is added to the payload type URI to indicate that
+`"raw-json-no-payload-type"` is added to the payload type URI to indicate that
 the signature is over the raw payload. This allows the signatures to remain
 valid while avoiding the verifier from having to use [Canonical JSON].
 
@@ -163,8 +163,8 @@ To verify:
     decoding or the signature verification fails.
 -   Parse SERIALIZED_BODY as a JSON object. Reject if the parsing fails or if
     the result is not a JSON object. In particular, the first byte of
-    SERIALIZED_BODY **MUST** be `{`. Verifiers **MUST NOT** require SERIALIZED_BODY
-    to be Canonical JSON.
+    SERIALIZED_BODY **MUST** be `{`. Verifiers **MUST NOT** require
+    SERIALIZED_BODY to be Canonical JSON.
 -   Discard `payloadType` if present.
 
 Backwards compatible signatures are not recommended because they lack the
@@ -289,8 +289,8 @@ Rationales for specific decisions:
         payloadType were not signed.
     -   Also, URIs don't need to be registered while Media Types do.
 
--   Why use payloadType "backwards-compatible-json" instead of assuming
-    backwards compatible mode if payloadType is absent?
+-   Why use payloadType "raw-json-no-payload-type" instead of assuming backwards
+    compatible mode if payloadType is absent?
 
     -   We wanted to leave open the possibility of having an
         application-specific "default" value if payloadType is unspecified,
