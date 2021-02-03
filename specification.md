@@ -211,7 +211,38 @@ do so in the future.
 Verifiers can differentiate between the old and new wrapper format by detecting
 the presence of the `payload` field vs `signed` field.
 
-## Motivation
+## Design considerations
+
+### Design requirements
+
+The signature scheme:
+
+*   MUST reduce the possibility of a client misinterpreting the payload (e.g.
+    interpreting a JSON message as protobuf)
+*   MUST support arbitrary payload types (e.g. not just JSON)
+*   MUST support arbitrary crypto primitives, libraries, and key management
+    systems (e.g. Tink vs openssl, Google KMS vs Amazon KMS)
+*   SHOULD avoid depending on canonicalization for security
+*   SHOULD NOT require unnecessary encoding (e.g. base64)
+*   SHOULD NOT require the verifier to parse the payload before verifying
+
+The single-message data structure / file format:
+
+*   MUST include both message and signature(s)
+    *   NOTE: Detached signatures are supported by having the included message
+        contain a cryptographic hash of the external data.
+*   MUST support multiple signatures in one structure / file
+*   SHOULD discourage users from reading the payload without verifying the
+    signatures
+*   SHOULD be easy to parse using common libraries (e.g. JSON)
+*   SHOULD support a hint indicating what signing key was used
+
+Addtionally, a multi-message file format:
+
+*   MUST support multiple signed messages in a single file, possibly as a
+    separate file format
+
+### Motivation
 
 There are two concerns with the current in-toto/TUF signature wrapper.
 
@@ -245,7 +276,7 @@ such a vulnerability. The signature scheme should be resilient against these
 classes of attacks. See [example attack](hypothetical_signature_attack.ipynb)
 for more details.
 
-## Reasoning
+### Reasoning
 
 Our goal was to create a signature wrapper that is as simple and foolproof as
 possible. Alternatives such as [JWS] are extremely complex and error-prone,
