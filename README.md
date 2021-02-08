@@ -18,5 +18,5 @@ Out of scope (for now at least):
 
 ## Who uses it?
 
-*   [in-toto](https://in-toto.io) (pending in-toto/ITE#13)
+*   [in-toto](https://in-toto.io) (pending [ITE-5](https://github.com/in-toto/ITE/pull/13))
 *   [TUF](https://theupdateframework.io) (pending)
