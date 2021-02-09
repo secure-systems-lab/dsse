@@ -10,7 +10,7 @@ Version 0.1.0
 ## Abstract
 
 This document proposes a new signature scheme for use by, among others, the
-in-toto and TUF projects. This signature scheme (a) avoids relying on
+[in-toto] and [TUF] projects. This signature scheme (a) avoids relying on
 canonicalization for security and (b) reduces the possibility of
 misinterpretation of the payload. The serialized payload is encoded as a string
 and verified by the recipient _before_ deserializing. A backwards compatible
@@ -50,8 +50,8 @@ Parameters:
 *   PAYLOAD_TYPE is an authenticated(*) URI indicating how to interpret
     SERIALIZED_BODY. It encompasses the content type (JSON, Canonical-JSON,
     CBOR, etc.), the purpose, and the schema version of the payload. This
-    obviates the need for the `_type` field within in-toto/TUF payloads. This
-    URI does not need to be resolved to a remote resource, nor does such a
+    obviates the need for the `_type` field within [in-toto]/[TUF] payloads.
+    This URI does not need to be resolved to a remote resource, nor does such a
     resource need to be fetched. Examples:
 
     -   https://in-toto.io/Link/v0.9
@@ -213,7 +213,7 @@ the presence of the `payload` field vs `signed` field.
 
 ## Motivation
 
-There are two concerns with the current in-toto/TUF signature wrapper.
+There are two concerns with the current [in-toto]/[TUF] signature wrapper.
 
 First, the signature scheme depends on [Canonical JSON], which has one practical
 problem and two theoretical ones:
@@ -320,8 +320,8 @@ Rationales for specific decisions:
 
 The
 [old signature format](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
-used by TUF and in-toto has a BODY that is a regular JSON object and a signature
-over the [Canonical JSON] serialization of BODY.
+used by [TUF] and [in-toto] has a BODY that is a regular JSON object and a
+signature over the [Canonical JSON] serialization of BODY.
 
 ```json
 {
@@ -408,5 +408,7 @@ Signed wrapper:
 
 [backwards compatible signature]: #backwards-compatible-signatures
 [Canonical JSON]: http://wiki.laptop.org/go/Canonical_JSON
+[in-toto]: https://in-toto.io
 [JWS]: https://tools.ietf.org/html/rfc7515
 [PASETO]: https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig
+[TUF]: https://theupdateframework.io
