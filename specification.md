@@ -13,8 +13,7 @@ This document proposes a new signature scheme for use by, among others, the
 [in-toto] and [TUF] projects. This signature scheme (a) avoids relying on
 canonicalization for security and (b) reduces the possibility of
 misinterpretation of the payload. The serialized payload is encoded as a string
-and verified by the recipient _before_ deserializing. A backwards compatible
-variant is available.
+and verified by the recipient _before_ deserializing.
 
 ## Overview
 
@@ -40,14 +39,13 @@ The signature format is a JSON message of the following form:
 ```
 
 Empty fields may be omitted. [Multiple signatures](#multiple-signatures) are
-allowed. Note that an optional `signature.sigType` field may be present but
-empty for compatibility with [backwards compatible signature] mode.
+allowed.
 
 Parameters:
 
 *   SERIALIZED_BODY is the byte sequence to be signed.
 
-*   PAYLOAD_TYPE is an authenticated(*) URI indicating how to interpret
+*   PAYLOAD_TYPE is an authenticated URI indicating how to interpret
     SERIALIZED_BODY. It encompasses the content type (JSON, Canonical-JSON,
     CBOR, etc.), the purpose, and the schema version of the payload. This
     obviates the need for the `_type` field within [in-toto]/[TUF] payloads.
@@ -58,9 +56,6 @@ Parameters:
     -   https://in-toto.io/Layout/v0.9
     -   https://theupdateframework.com/Root/v1.0.5
     -   etc...
-
-    (*) Exception: PAYLOAD_TYPE is unauthenticated if `signature.sigType ==
-    "raw-json-no-payload-type"`.
 
 *   KEYID is an optional, unauthenticated hint indicating what key and algorithm
     was used to sign the message. As with Sign(), details are agreed upon
@@ -95,7 +90,6 @@ Functions:
 Out of band:
 
 -   Agree on a PAYLOAD_TYPE and cryptographic details.
--   Decide if [backwards compatible signature] mode should be allowed.
 
 To sign:
 
@@ -109,9 +103,6 @@ To sign:
 
 To verify:
 
--   If `sigType == "raw-json-no-payload-type"`, use
-    [backwards compatible signature] instead. Reject if `sigType` is any other
-    non-empty value.
 -   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
     fails.
 -   Base64-decode `sig` and verify PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY).
@@ -122,57 +113,6 @@ To verify:
 
 Either standard or URL-safe base64 encodings are allowed. Signers may use
 either, and verifiers **MUST** accept either.
-
-### Backwards compatible signatures
-
-To convert existing signatures from the current format to the new format,
-`"raw-json-no-payload-type"` is added to the payload type URI to indicate that
-the signature is over the raw payload. This allows the signatures to remain
-valid while avoiding the verifier from having to use [Canonical JSON].
-
-```json
-{
-  "payload": "<Base64(SERIALIZED_BODY)>",
-  "signatures" : [{
-    "keyid": "<KEYID>",
-    "sigType": "raw-json-no-payload-type",
-    "sig" : "<Base64(Sign(SERIALIZED_BODY))>"
-  }]
-}
-```
-
-Support for this backwards compatibility mode is optional and should be disabled
-by default.
-
-To sign:
-
--   The message **MUST** be an object type (`{...}`).
--   Serialize the message as [Canonical JSON]; call this SERIALIZED_BODY.
--   Sign SERIALIZED_BODY, base64-encode the result, and store it in `sig`.
--   Store `"raw-json-no-payload-type"` in `sigType`.
--   Optionally, compute a KEYID and store it in `keyid`.
--   Base64-encode SERIALIZED_BODY and store it in `payload`.
-
-To verify:
-
--   If `sigType != "raw-json-no-payload-type"`, use the
-    [normal verification process](#steps) instead of this one.
--   Base64-decode `payload`; call this SERIALIZED_BODY. Reject if the decoding
-    fails.
--   Base64-decode `sig` and verify SERIALIZED_BODY. Reject if either the
-    decoding or the signature verification fails.
--   Parse SERIALIZED_BODY as a JSON object. Reject if the parsing fails or if
-    the result is not a JSON object. In particular, the first byte of
-    SERIALIZED_BODY **MUST** be `{`. Verifiers **MUST NOT** require
-    SERIALIZED_BODY to be Canonical JSON.
--   Discard `payloadType` if present.
-
-Backwards compatible signatures are not recommended because they lack the
-authenticated payloadType indicator.
-
-This scheme is safe from rollback attacks because the first byte of
-SERIALIZED_BODY is 0x7b (`{`) in backwards compatibility mode and 0x02 in
-regular mode.
 
 ### Multiple signatures
 
@@ -208,8 +148,10 @@ do so in the future.
 
 ### Differentiating between old and new formats
 
-Verifiers can differentiate between the old and new wrapper format by detecting
-the presence of the `payload` field vs `signed` field.
+Verifiers can differentiate between the
+[old](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
+and new wrapper format by detecting the presence of the `payload` field (new
+format) vs `signed` field (old format).
 
 ## Motivation
 
@@ -289,15 +231,6 @@ Rationales for specific decisions:
         payloadType were not signed.
     -   Also, URIs don't need to be registered while Media Types do.
 
--   Why use payloadType "raw-json-no-payload-type" instead of assuming backwards
-    compatible mode if payloadType is absent?
-
-    -   We wanted to leave open the possibility of having an
-        application-specific "default" value if payloadType is unspecified,
-        rather than forcing the default to be backwards compatibility mode.
-    -   Note that specific applications can still choose backwards compatibility
-        to be the default.
-
 -   Why not stay backwards compatible by requiring the payload to always be JSON
     with a "_type" field? Then if you want a non-JSON payload, you could simply
     have a field that contains the real payload, e.g. `{"_type":"my-thing",
@@ -313,48 +246,6 @@ Rationales for specific decisions:
             [JSON-LD](https://json-ld.org/).
     2.  It would incur double base64 encoding overhead for non-JSON payloads.
     3.  It is more complex than PAE.
-
-## Backwards compatibility with existing TUF and in-toto signatures
-
-### Current format
-
-The
-[old signature format](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
-used by [TUF] and [in-toto] has a BODY that is a regular JSON object and a
-signature over the [Canonical JSON] serialization of BODY.
-
-```json
-{
-  "signed": <BODY>,
-  "signatures": [{
-    "keyid": "<KEYID>",
-    "sig": "<Hex(Sign(CanonicalJson(BODY)))>"
-  }]
-}
-```
-
-To verify, the consumer parses the whole JSON file, re-serializes BODY using
-Canonical JSON, then verifies the signature.
-
-### Detect if a document is using old format
-
-To detect whether a signature is in the old or new format:
-
--   If it contains a `payload` field, assume it is in the new format.
--   If it contains a `signed` field, assume it is in the old format.
-
-To convert an existing signature to the new format:
-
--   `new.payload = base64encode(CanonicalJson(orig.signed))`
--   `new.signatures[*].sigType = "raw-json-no-payload-type"`
--   `new.signatures[*].sig = base64encode(hexdecode(orig.signatures[*].sig))`
--   `new.signatures[*].keyid = orig.signatures[*].keyid`
-
-To convert a [backwards compatible signature] to the old format:
-
--   `old.signed = jsonparse(base64decode(new.payload))`
--   `old.signatures[*].sig = hexencode(base64decode(new.signatures[*].sig))`
--   `old.signatures[*].keyid = new.signatures[*].keyid`
 
 ## Testing
 
@@ -406,7 +297,6 @@ Signed wrapper:
 -   [JWS]
 -   [PASETO]
 
-[backwards compatible signature]: #backwards-compatible-signatures
 [Canonical JSON]: http://wiki.laptop.org/go/Canonical_JSON
 [in-toto]: https://in-toto.io
 [JWS]: https://tools.ietf.org/html/rfc7515
