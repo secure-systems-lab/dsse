@@ -237,11 +237,6 @@ The single-message data structure / file format:
 *   SHOULD be easy to parse using common libraries (e.g. JSON)
 *   SHOULD support a hint indicating what signing key was used
 
-Additionally, a multi-message file format:
-
-*   MUST support multiple signed messages in a single file, possibly as a
-    separate file format
-
 ### Motivation
 
 There are two concerns with the current in-toto/TUF signature wrapper.
