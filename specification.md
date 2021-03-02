@@ -247,6 +247,15 @@ Rationales for specific decisions:
     2.  It would incur double base64 encoding overhead for non-JSON payloads.
     3.  It is more complex than PAE.
 
+## Backwards Compatibility
+
+Backwards compatibility with the old format will be handled by the application
+and explained in the corresponding application-specific change proposal, namely
+[ITE-5](https://github.com/in-toto/ITE/pull/13) for in-toto and via the
+principles laid out in
+[TAP-14](https://github.com/theupdateframework/taps/blob/master/tap14.md) for
+TUF.
+
 ## Testing
 
 See [reference implementation](reference_implementation.ipynb). Here is an
