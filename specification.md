@@ -3,7 +3,7 @@
 A signature scheme for software supply chain metadata that avoids
 canonicalization
 
-November 25, 2020
+March 03, 2021
 
 Version 0.1.0
 
