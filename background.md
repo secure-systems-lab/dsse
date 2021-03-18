@@ -41,7 +41,7 @@ The [protocol](protocol.md):
 *   SHOULD NOT require unnecessary encoding (e.g. base64)
 *   SHOULD NOT require the verifier to parse the payload before verifying
 
-The [data structure](encoding.md):
+The [data structure](envelope.md):
 
 *   MUST include both message and signature(s)
     *   NOTE: Detached signatures are supported by having the included message
