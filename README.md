@@ -30,10 +30,16 @@ Out of scope (for now at least):
 *   Why not [JOSE/JWS/JWT](https://jwt.io)? JSON-specific, too complicated, too
     easy to mess up.
 *   Why not [PASETO](https://paseto.io)? JSON-specific, too opinionated.
+*   Why not the legacy TUF/in-toto signature scheme? JSON-specific, relies on
+    canonicalization.
 
 See [Background](background.md) for further motivation.
 
 ## Who uses it?
+
+<!-- Reminder: once in-toto and TUF switch to this new format, update the rest
+of the docs that currently reference the old format as "current", "existing",
+etc. -->
 
 *   [in-toto](https://in-toto.io) (pending [ITE-5](https://github.com/in-toto/ITE/pull/13))
 *   [TUF](https://theupdateframework.io) (pending)

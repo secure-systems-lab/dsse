@@ -11,8 +11,8 @@ and [in-toto].
 
 There is no other simple, foolproof signature scheme that we are aware of.
 
-*   Raw signatures are too fragle. Every public key must be used for exactly one
-    purpose over exactly one message type, lest the system be vulnerable to
+*   Raw signatures are too fragile. Every public key must be used for exactly
+    one purpose over exactly one message type, lest the system be vulnerable to
     [confusion attacks](#motivation). In many cases, this results in a difficult
     key management problem.
 
@@ -78,7 +78,7 @@ signed, which the verifier verifies before parsing. This is what is done in
 
 Second, the scheme does not include an authenticated "context" indicator to
 ensure that the signer and verifier interpret the payload in the same exact way.
-For example, if in-toto were extended to support CBOR and Protobuf encoding, the
+For example, if in-toto were extended to support CBOR and protobuf encoding, the
 signer could get a CI/CD system to produce a CBOR message saying X and then a
 verifier to interpret it as a protobuf message saying Y. While we don't know of
 an exploitable attack on in-toto or TUF today, potential changes could introduce

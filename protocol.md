@@ -66,15 +66,14 @@ To sign:
     SERIALIZED_BODY.
 -   Sign PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Call the result SIGNATURE.
 -   Optionally, compute a KEYID.
--   Encode and transmit SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, and KEYID.
-    -   In the recommended [JSON envelope](envelope.md), this is
-        `{"payload": "Base64(SERIALIZED_BODY)", "payloadType": "PAYLOAD_TYPE",
-        "signatures": [{"keyid": "KEYID", "sig": "Base64(SIGNATURE)"}]}`.
+-   Encode and transmit SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, and KEYID,
+    preferably using the recommended [JSON envelope](envelope.md).
 
 To verify:
 
--   Receive and decode SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, and KEYID.
-    Reject if decoding fails.
+-   Receive and decode SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, and KEYID, such
+    as from the recommended [JSON envelope](envelope.md). Reject if decoding
+    fails.
 -   Optionally, filter acceptable public keys by KEYID.
 -   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Reject if
     the verification fails.

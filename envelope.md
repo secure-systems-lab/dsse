@@ -58,7 +58,7 @@ The standard envelope is JSON message with an explicit `payloadType`.
 Optionally, applications may encode the signed message in other methods without
 invalidating the signature:
 
--   An encoding other than JSON, such as CBOR or Protobuf.
+-   An encoding other than JSON, such as CBOR or protobuf.
 -   Use a default `payloadType` if omitted and/or code `payloadType` as a
     shorter string or enum.
 
