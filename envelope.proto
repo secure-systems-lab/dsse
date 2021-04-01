@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package io.intoto;
+
+// An authenticated message of arbitrary type.
+message Envelope {
+  // Message to be signed. (In JSON, this is encoded as base64.)
+  bytes payload = 1;
+
+  // String unambiguously identifying how to interpret payload.
+  string payloadType = 2;
+
+  // Signature over:
+  //     le64(2) || le64(len(utf8(payloadType))) || utf8(payloadType) ||
+  //         le64(len(payload)) || payload
+  // At least one signature must be present.
+  repeated Signature signatures = 3;
+}
+
+message Signature {
+  // Signature itself. (In JSON, this is encoded as base64.)
+  bytes sig = 1;
+
+  // *Unauthenticated* hint identifying which public key was used.
+  string keyid = 2;
+}

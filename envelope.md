@@ -10,6 +10,9 @@ signatures, which we call the "JSON Envelope". For the protocol/algorithm, see
 
 ## Standard JSON envelope
 
+See [envelope.proto](envelope.proto) for a formal schema. (Protobuf is used only
+to define the schema. JSON is the only recommended encoding.)
+
 The standard data structure for storing a signed message is a JSON message of
 the following form, called the "JSON envelope":
 
