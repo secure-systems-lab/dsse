@@ -26,14 +26,24 @@ KEYID           | string | No       | No
 
 *   SERIALIZED_BODY: Byte sequence to be signed.
 
-*   PAYLOAD_TYPE: Authenticated URI indicating how to interpret SERIALIZED_BODY.
-    It encompasses the content type (JSON, Canonical-JSON, CBOR, etc.), the
-    purpose, and the schema version of the payload. This obviates the need for
-    the `_type` field within [in-toto]/[TUF] payloads. This URI does not need to
-    be resolved to a remote resource, nor does such a resource need to be
-    fetched. Examples: `https://in-toto.io/Link/v1.0`,
-    `https://in-toto.io/Layout/v1.0`,
-    `https://theupdateframework.com/Root/v1.0.5`.
+*   PAYLOAD_TYPE: Opaque, case-sensitive string that uniquely and unambiguously
+    identifies how to interpret `payload`. This includes both the encoding
+    (JSON, CBOR, etc.) as well as the meaning/schema. To prevent collisions, the
+    value SHOULD be either:
+
+    *   [URI](https://tools.ietf.org/html/rfc3986) (recommended)
+        *   Example: `https://in-toto.io/Statement/v1-json`.
+        *   SHOULD resolve to a human-readable description but MAY be
+            unresolvable.
+        *   SHOULD be case-normalized (section 6.2.2.1)
+    *   [Media Type](https://www.iana.org/assignments/media-types/), a.k.a. MIME
+        type or Content Type
+        *   Example: `application/vnd.in-toto.statement.v1+json`.
+        *   IMPORTANT: SHOULD NOT be a generic type that only represents
+            encoding but not schema. For example, `application/json` is almost
+            always WRONG. Instead, invent a media type specific for your
+            application in the `application/vnd` namespace.
+        *   SHOULD be lowercase.
 
 *   KEYID: Optional, unauthenticated hint indicating what key and algorithm was
     used to sign the message. As with Sign(), details are agreed upon
