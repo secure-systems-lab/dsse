@@ -18,19 +18,25 @@ SIGNATURE = Sign(PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY))
 
 Parameters:
 
-*   SERIALIZED_BODY is the byte sequence to be signed.
+Name            | Type   | Required | Authenticated
+--------------- | ------ | -------- | -------------
+SERIALIZED_BODY | bytes  | Yes      | Yes
+PAYLOAD_TYPE    | string | Yes      | Yes
+KEYID           | string | No       | No
 
-*   PAYLOAD_TYPE is an authenticated URI indicating how to interpret
-    SERIALIZED_BODY. It encompasses the content type (JSON, Canonical-JSON,
-    CBOR, etc.), the purpose, and the schema version of the payload. This
-    obviates the need for the `_type` field within [in-toto]/[TUF] payloads.
-    This URI does not need to be resolved to a remote resource, nor does such a
-    resource need to be fetched. Examples: `https://in-toto.io/Link/v1.0`,
+*   SERIALIZED_BODY: Byte sequence to be signed.
+
+*   PAYLOAD_TYPE: Authenticated URI indicating how to interpret SERIALIZED_BODY.
+    It encompasses the content type (JSON, Canonical-JSON, CBOR, etc.), the
+    purpose, and the schema version of the payload. This obviates the need for
+    the `_type` field within [in-toto]/[TUF] payloads. This URI does not need to
+    be resolved to a remote resource, nor does such a resource need to be
+    fetched. Examples: `https://in-toto.io/Link/v1.0`,
     `https://in-toto.io/Layout/v1.0`,
     `https://theupdateframework.com/Root/v1.0.5`.
 
-*   KEYID is an optional, unauthenticated hint indicating what key and algorithm
-    was used to sign the message. As with Sign(), details are agreed upon
+*   KEYID: Optional, unauthenticated hint indicating what key and algorithm was
+    used to sign the message. As with Sign(), details are agreed upon
     out-of-band by the signer and verifier. It **MUST NOT** be used for security
     decisions; it may only be used to narrow the selection of possible keys to
     try.
