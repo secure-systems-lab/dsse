@@ -119,17 +119,6 @@ Rationales for specific decisions:
         payloadType and payload. PAE is already documented and good enough. No
         need to reinvent the wheel.
 
--   Why use a URI for payloadType rather than
-    [Media Type](https://www.iana.org/assignments/media-types/media-types.xhtml)
-    (a.k.a. MIME type)?
-
-    -   Because Media Type only indicates how to parse but does not indicate
-        purpose, schema, or versioning. If it were just "application/json", for
-        example, then every application would need to impose some "type" field
-        within the payload, lest we have similar vulnerabilities as if
-        payloadType were not signed.
-    -   Also, URIs don't need to be registered while Media Types do.
-
 -   Why not stay backwards compatible by requiring the payload to always be JSON
     with a "_type" field? Then if you want a non-JSON payload, you could simply
     have a field that contains the real payload, e.g. `{"_type":"my-thing",
