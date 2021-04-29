@@ -31,19 +31,19 @@ KEYID           | string | No       | No
     (JSON, CBOR, etc.) as well as the meaning/schema. To prevent collisions, the
     value SHOULD be either:
 
-    *   [URI](https://tools.ietf.org/html/rfc3986) (recommended)
-        *   Example: `https://in-toto.io/Statement/v1-json`.
-        *   SHOULD resolve to a human-readable description but MAY be
-            unresolvable.
-        *   SHOULD be case-normalized (section 6.2.2.1)
     *   [Media Type](https://www.iana.org/assignments/media-types/), a.k.a. MIME
         type or Content Type
-        *   Example: `application/vnd.in-toto.statement.v1+json`.
+        *   Example: `application/vnd.in-toto+json`.
         *   IMPORTANT: SHOULD NOT be a generic type that only represents
             encoding but not schema. For example, `application/json` is almost
             always WRONG. Instead, invent a media type specific for your
             application in the `application/vnd` namespace.
         *   SHOULD be lowercase.
+    *   [URI](https://tools.ietf.org/html/rfc3986)
+        *   Example: `https://example.com/MyMessage/v1-json`.
+        *   SHOULD resolve to a human-readable description but MAY be
+            unresolvable.
+        *   SHOULD be case-normalized (section 6.2.2.1)
 
 *   KEYID: Optional, unauthenticated hint indicating what key and algorithm was
     used to sign the message. As with Sign(), details are agreed upon
