@@ -20,7 +20,12 @@ There is no other simple, foolproof signature scheme that we are aware of.
     JSON-specific and relies on [canonicalization](motivation.md), which is an
     unnecessarily large attack surface.
 
-*   [JWS] is JSON-specific, complicated, and error-prone.
+*   [JWS], though popular, has a history of
+    [vulnerable implementations](https://auth0.com/blog/critical-vulnerabilities-in-json-web-token-libraries/)
+    due to the complexity and lack of specificity in the RFC, such as not
+    verifying that `alg` matches the public key type or not verifying the root
+    CA for `x5c`. It also requires a JSON library even if the payload is not
+    JSON, though this is a minor issue.
 
 *   [PASETO] is JSON-specific and too opinionated. For example, it mandates
     ed25519 signatures, which may not be useful in all cases.
