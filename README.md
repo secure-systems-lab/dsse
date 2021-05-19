@@ -27,8 +27,8 @@ Out of scope (for now at least):
 ## Why not...?
 
 *   Why not raw signatures? Too fragile.
-*   Why not [JOSE/JWS/JWT](https://jwt.io)? JSON-specific, too complicated, too
-    easy to mess up.
+*   Why not [JWS](https://tools.ietf.org/html/rfc7515)? Too many insecure
+    implementations and features.
 *   Why not [PASETO](https://paseto.io)? JSON-specific, too opinionated.
 *   Why not the legacy TUF/in-toto signature scheme? JSON-specific, relies on
     canonicalization.
