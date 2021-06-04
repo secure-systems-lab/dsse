@@ -1,4 +1,4 @@
-# signing-spec
+# DSSE: Dead Simple Signing Envelope
 
 Simple, foolproof standard for signing arbitrary data.
 
