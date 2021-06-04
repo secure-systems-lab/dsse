@@ -2,7 +2,7 @@
 
 March 03, 2021
 
-Version 0.1.0
+Version 1.0.0
 
 This document describes the protocol/algorithm for creating and verifying DSSE
 signatures, independent of how they are transmitted or stored. For the

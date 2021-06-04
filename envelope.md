@@ -2,7 +2,7 @@
 
 March 03, 2021
 
-Version 0.1.0
+Version 1.0.0
 
 This document describes the recommended data structure for storing DSSE
 signatures, which we call the "JSON Envelope". For the protocol/algorithm, see
