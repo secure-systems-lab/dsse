@@ -24,7 +24,7 @@ SERIALIZED_BODY | bytes  | Yes      | Yes
 PAYLOAD_TYPE    | string | Yes      | Yes
 KEYID           | string | No       | No
 
-*   SERIALIZED_BODY: Byte sequence to be signed.
+*   SERIALIZED_BODY: Arbitrary byte sequence to be signed.
 
 *   PAYLOAD_TYPE: Opaque, case-sensitive string that uniquely and unambiguously
     identifies how to interpret `payload`. This includes both the encoding
@@ -34,10 +34,11 @@ KEYID           | string | No       | No
     *   [Media Type](https://www.iana.org/assignments/media-types/), a.k.a. MIME
         type or Content Type
         *   Example: `application/vnd.in-toto+json`.
-        *   IMPORTANT: SHOULD NOT be a generic type that only represents
-            encoding but not schema. For example, `application/json` is almost
-            always WRONG. Instead, invent a media type specific for your
-            application in the `application/vnd` namespace.
+        *   IMPORTANT: This SHOULD be an application-specific type describing
+            both encoding and schema, NOT a generic type like
+            `application/json`. The problem with generic types is that two
+            different applications could use the same encoding (e.g. JSON) but
+            interpret the payload differently.
         *   SHOULD be lowercase.
     *   [URI](https://tools.ietf.org/html/rfc3986)
         *   Example: `https://example.com/MyMessage/v1-json`.
