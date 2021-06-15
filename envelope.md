@@ -55,6 +55,20 @@ envelopes with individual signatures.
 }
 ```
 
+### No signatures
+
+An envelope MAY have zero signatures to indicate unsigned data. For example,
+[SLSA 1](https://github.com/slsa-framework/slsa) does not require authenticated
+[in-toto provenance](https://github.com/in-toto/attestation/blob/main/spec/predicates/provenance.md),
+in which case an envelope with zero signatures may be useful.
+
+```json
+{
+  "payload": "<Base64(SERIALIZED_BODY)>",
+  "payloadType": "<PAYLOAD_TYPE>"
+}
+```
+
 ## Other data structures
 
 The standard envelope is JSON message with an explicit `payloadType`.

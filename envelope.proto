@@ -19,7 +19,7 @@ message Envelope {
   //     le64(n) := 64-bit little-endian encoding of integer `n`, 0 <= n < 2^63
   //     len(s) := number of octets in byte sequence `s`
   //     utf8(s) := UTF-8 encoding of unicode string `s`
-  // REQUIRED (length >= 1).
+  // OPTIONAL.
   repeated Signature signatures = 3;
 }
 
