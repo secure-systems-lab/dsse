@@ -57,9 +57,12 @@ Functions:
 *   PAE() is the "Pre-Authentication Encoding", where parameters `type` and
     `body` are byte sequences:
 
-    ```python
-    PAE(type, body) := "DSSEv1 <len(type)> <type> <len(body)> <body>"
-    len(s) := ASCII decimal encoding of the byte length of s, with no leading zeros
+    ```none
+    PAE(type, body) = "DSSEv1" + SP + LEN(type) + SP + type + SP + LEN(body) + SP + body
+    +               = concatenation
+    SP              = ASCII space [0x20]
+    "DSSEv1"        = ASCII [0x44, 0x53, 0x53, 0x45, 0x76, 0x31]
+    LEN(s)          = ASCII decimal encoding of the byte length of s, with no leading zeros
     ```
 
 *   Sign() is an arbitrary digital signature format. Details are agreed upon
