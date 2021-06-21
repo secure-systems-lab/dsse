@@ -1,4 +1,4 @@
-# signing-spec
+# DSSE: Dead Simple Signing Envelope
 
 Simple, foolproof standard for signing arbitrary data.
 
@@ -22,7 +22,8 @@ Specifications for:
 
 Out of scope (for now at least):
 
-*   Key management / PKI
+*   Key management / PKI /
+    [exclusive ownership](https://www.bolet.org/~pornin/2005-acns-pornin+stern.pdf)
 
 ## Why not...?
 

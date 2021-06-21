@@ -1,10 +1,10 @@
-# signing-spec Envelope
+# DSSE Envelope
 
 March 03, 2021
 
-Version 0.1.0
+Version 1.0.0
 
-This document describes the recommended data structure for storing signing-spec
+This document describes the recommended data structure for storing DSSE
 signatures, which we call the "JSON Envelope". For the protocol/algorithm, see
 [Protocol](protocol.md).
 
@@ -29,16 +29,13 @@ the following form, called the "JSON envelope":
 
 See [Protocol](protocol.md) for a definition of parameters and functions.
 
-Empty fields may be omitted. [Multiple signatures](#multiple-signatures) are
-allowed.
-
 Base64() is [Base64 encoding](https://tools.ietf.org/html/rfc4648), transforming
 a byte sequence to a unicode string. Either standard or URL-safe encoding is
 allowed.
 
 ### Multiple signatures
 
-An envelope may have more than one signature, which is equivalent to separate
+An envelope MAY have more than one signature, which is equivalent to separate
 envelopes with individual signatures.
 
 ```json
@@ -54,6 +51,15 @@ envelopes with individual signatures.
   }]
 }
 ```
+
+### Parsing rules
+
+*   The following fields are REQUIRED and MUST be set, even if empty: `payload`,
+    `payloadType`, `signature`, `signature.sig`.
+*   The following fields are OPTIONAL and MAY be unset: `signature.keyid`.
+    An unset field MUST be treated the same as set-but-empty.
+*   Producers, or future versions of the spec, MAY add additional fields.
+    Consumers MUST ignore unrecognized fields.
 
 ## Other data structures
 

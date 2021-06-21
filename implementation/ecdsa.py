@@ -28,6 +28,10 @@ class Signer:
         h = SHA256.new(message)
         return DSS.new(self.secret_key, 'deterministic-rfc6979').sign(h)
 
+    def keyid(self) -> str:
+        """Returns a fingerprint of the public key."""
+        return Verifier(self.public_key).keyid()
+
 
 class Verifier:
     def __init__(self, public_key):
@@ -41,3 +45,10 @@ class Verifier:
             return True
         except ValueError:
             return False
+
+    def keyid(self) -> str:
+        """Returns a fingerprint of the public key."""
+        # Note: This is a hack for demonstration purposes. A proper fingerprint
+        # should be used.
+        key = self.public_key.export_key(format='OpenSSH').encode('ascii')
+        return SHA256.new(key).hexdigest()[:8]

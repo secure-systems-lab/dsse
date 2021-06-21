@@ -6,7 +6,7 @@ SPDX-License-Identifier: Apache-2.0
 The following example requires `pip3 install pycryptodome` and uses ecdsa.py in
 the same directory as this file.
 
->>> import binascii, os, sys, textwrap
+>>> import os, sys
 >>> from pprint import pprint
 >>> sys.path.insert(0, os.path.dirname(__file__))
 >>> import ecdsa
@@ -26,7 +26,8 @@ Signing example:
 >>> pprint(json.loads(signature_json))
 {'payload': 'aGVsbG8gd29ybGQ=',
  'payloadType': 'http://example.com/HelloWorld',
- 'signatures': [{'sig': 'Cc3RkvYsLhlaFVd+d6FPx4ZClhqW4ZT0rnCYAfv6/ckoGdwT7g/blWNpOBuL/tZhRiVFaglOGTU8GEjm4aEaNA=='}]}
+ 'signatures': [{'keyid': '66301bbf',
+                 'sig': 'A3JqsQGtVsJ2O2xqrI5IcnXip5GToJ3F+FnZ+O88SjtR6rDAajabZKciJTfUiHqJPcIAriEGAHTVeCUjW2JIZA=='}]}
 
 Verification example:
 
@@ -36,20 +37,14 @@ VerifiedPayload(payloadType='http://example.com/HelloWorld', payload=b'hello wor
 
 PAE:
 
->>> def print_hex(b: bytes):
-...   octets = ' '.join(textwrap.wrap(binascii.hexlify(b).decode('utf-8'), 2))
-...   print(*textwrap.wrap(octets, 48), sep='\n')
->>> print_hex(PAE(payloadType, payload))
-02 00 00 00 00 00 00 00 1d 00 00 00 00 00 00 00
-68 74 74 70 3a 2f 2f 65 78 61 6d 70 6c 65 2e 63
-6f 6d 2f 48 65 6c 6c 6f 57 6f 72 6c 64 0b 00 00
-00 00 00 00 00 68 65 6c 6c 6f 20 77 6f 72 6c 64
+>>> PAE(payloadType, payload)
+b'DSSEv1 29 http://example.com/HelloWorld 11 hello world'
 """
 
 import base64, binascii, dataclasses, json, struct
 
 # Protocol requires Python 3.8+.
-from typing import Iterable, List, Protocol, Tuple
+from typing import Iterable, List, Optional, Protocol, Tuple
 
 
 class Signer(Protocol):
@@ -57,10 +52,18 @@ class Signer(Protocol):
         """Returns the signature of `message`."""
         ...
 
+    def keyid(self) -> Optional[str]:
+        """Returns the ID of this key, or None if not supported."""
+        ...
+
 
 class Verifier(Protocol):
     def verify(self, message: bytes, signature: bytes) -> bool:
         """Returns true if `message` was signed by `signature`."""
+        ...
+
+    def keyid(self) -> Optional[str]:
+        """Returns the ID of this key, or None if not supported."""
         ...
 
 
@@ -88,23 +91,22 @@ def b64dec(m: str) -> bytes:
 
 
 def PAE(payloadType: str, payload: bytes) -> bytes:
-    return b''.join([
-        struct.pack('<Q', 2),
-        struct.pack('<Q', len(payloadType)),
-        payloadType.encode('utf-8'),
-        struct.pack('<Q', len(payload)), payload
-    ])
+    return b'DSSEv1 %d %b %d %b' % (
+            len(payloadType), payloadType.encode('utf-8'),
+            len(payload), payload)
 
 
 def Sign(payloadType: str, payload: bytes, signer: Signer) -> str:
+    signature = {
+        'keyid': signer.keyid(),
+        'sig': b64enc(signer.sign(PAE(payloadType, payload))),
+    }
+    if not signature['keyid']:
+        del signature['keyid']
     return json.dumps({
-        'payload':
-        b64enc(payload),
-        'payloadType':
-        payloadType,
-        'signatures': [{
-            'sig': b64enc(signer.sign(PAE(payloadType, payload)))
-        }],
+        'payload': b64enc(payload),
+        'payloadType': payloadType,
+        'signatures': [signature],
     })
 
 
@@ -116,6 +118,10 @@ def Verify(json_signature: str, verifiers: VerifierList) -> VerifiedPayload:
     recognizedSigners = []
     for signature in wrapper['signatures']:
         for name, verifier in verifiers:
+            if (signature.get('keyid') is not None and
+                verifier.keyid() is not None and
+                signature.get('keyid') != verifier.keyid()):
+                continue
             if verifier.verify(pae, b64dec(signature['sig'])):
                 recognizedSigners.append(name)
     if not recognizedSigners:

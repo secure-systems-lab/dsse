@@ -1,12 +1,12 @@
-# signing-spec Protocol
+# DSSE Protocol
 
 March 03, 2021
 
-Version 0.1.0
+Version 1.0.0
 
-This document describes the protocol/algorithm for creating and verifying
-signing-spec signatures, independent of how they are transmitted or stored. For
-the recommended data structure, see [Envelope](envelope.md).
+This document describes the protocol/algorithm for creating and verifying DSSE
+signatures, independent of how they are transmitted or stored. For the
+recommended data structure, see [Envelope](envelope.md).
 
 ## Signature Definition
 
@@ -24,7 +24,7 @@ SERIALIZED_BODY | bytes  | Yes      | Yes
 PAYLOAD_TYPE    | string | Yes      | Yes
 KEYID           | string | No       | No
 
-*   SERIALIZED_BODY: Byte sequence to be signed.
+*   SERIALIZED_BODY: Arbitrary byte sequence to be signed.
 
 *   PAYLOAD_TYPE: Opaque, case-sensitive string that uniquely and unambiguously
     identifies how to interpret `payload`. This includes both the encoding
@@ -34,10 +34,11 @@ KEYID           | string | No       | No
     *   [Media Type](https://www.iana.org/assignments/media-types/), a.k.a. MIME
         type or Content Type
         *   Example: `application/vnd.in-toto+json`.
-        *   IMPORTANT: SHOULD NOT be a generic type that only represents
-            encoding but not schema. For example, `application/json` is almost
-            always WRONG. Instead, invent a media type specific for your
-            application in the `application/vnd` namespace.
+        *   IMPORTANT: This SHOULD be an application-specific type describing
+            both encoding and schema, NOT a generic type like
+            `application/json`. The problem with generic types is that two
+            different applications could use the same encoding (e.g. JSON) but
+            interpret the payload differently.
         *   SHOULD be lowercase.
     *   [URI](https://tools.ietf.org/html/rfc3986)
         *   Example: `https://example.com/MyMessage/v1-json`.
@@ -53,13 +54,15 @@ KEYID           | string | No       | No
 
 Functions:
 
-*   PAE() is the
-    [PASETO Pre-Authentication Encoding](https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Common.md#authentication-padding),
-    where parameters `type` and `body` are byte sequences:
+*   PAE() is the "Pre-Authentication Encoding", where parameters `type` and
+    `body` are byte sequences:
 
     ```none
-    PAE(type, body) := le64(2) || le64(len(type)) || type || le64(len(body)) || body
-    le64(n) := 64-bit little-endian encoding of `n`, where 0 <= n < 2^63
+    PAE(type, body) = "DSSEv1" + SP + LEN(type) + SP + type + SP + LEN(body) + SP + body
+    +               = concatenation
+    SP              = ASCII space [0x20]
+    "DSSEv1"        = ASCII [0x44, 0x53, 0x53, 0x45, 0x76, 0x31]
+    LEN(s)          = ASCII decimal encoding of the byte length of s, with no leading zeros
     ```
 
 *   Sign() is an arbitrary digital signature format. Details are agreed upon
@@ -102,7 +105,7 @@ either, and verifiers **MUST** accept either.
 
 ## Test Vectors
 
-See [reference implementation](reference_implementation.ipynb). Here is an
+See [reference implementation](implementation/signing_spec.py). Here is an
 example.
 
 SERIALIZED_BODY:
@@ -120,10 +123,7 @@ http://example.com/HelloWorld
 PAE:
 
 ```none
-02 00 00 00 00 00 00 00 1d 00 00 00 00 00 00 00
-68 74 74 70 3a 2f 2f 65 78 61 6d 70 6c 65 2e 63
-6f 6d 2f 48 65 6c 6c 6f 57 6f 72 6c 64 0b 00 00
-00 00 00 00 00 68 65 6c 6c 6f 20 77 6f 72 6c 64
+DSSEv1 29 http://example.com/HelloWorld 11 hello world
 ```
 
 Cryptographic keys:
@@ -141,7 +141,7 @@ Result (using the recommended [JSON envelope](envelope.md)):
 ```json
 {"payload": "aGVsbG8gd29ybGQ=",
  "payloadType": "http://example.com/HelloWorld",
- "signatures": [{"sig": "y7BK8Mm8Mr4gxk4+G9X3BD1iBc/vVVuJuV4ubmsEK4m/8MhQOOS26ejx+weIjyAx8VjYoZRPpoXSNjHEzdE7nQ=="}]}
+ "signatures": [{"sig": "A3JqsQGtVsJ2O2xqrI5IcnXip5GToJ3F+FnZ+O88SjtR6rDAajabZKciJTfUiHqJPcIAriEGAHTVeCUjW2JIZA=="}]}
 ```
 
 [Canonical JSON]: http://wiki.laptop.org/go/Canonical_JSON
