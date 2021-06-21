@@ -26,7 +26,8 @@ Signing example:
 >>> pprint(json.loads(signature_json))
 {'payload': 'aGVsbG8gd29ybGQ=',
  'payloadType': 'http://example.com/HelloWorld',
- 'signatures': [{'sig': 'A3JqsQGtVsJ2O2xqrI5IcnXip5GToJ3F+FnZ+O88SjtR6rDAajabZKciJTfUiHqJPcIAriEGAHTVeCUjW2JIZA=='}]}
+ 'signatures': [{'keyid': '66301bbf',
+                 'sig': 'A3JqsQGtVsJ2O2xqrI5IcnXip5GToJ3F+FnZ+O88SjtR6rDAajabZKciJTfUiHqJPcIAriEGAHTVeCUjW2JIZA=='}]}
 
 Verification example:
 
@@ -43,7 +44,7 @@ b'DSSEv1 29 http://example.com/HelloWorld 11 hello world'
 import base64, binascii, dataclasses, json, struct
 
 # Protocol requires Python 3.8+.
-from typing import Iterable, List, Protocol, Tuple
+from typing import Iterable, List, Optional, Protocol, Tuple
 
 
 class Signer(Protocol):
@@ -51,10 +52,18 @@ class Signer(Protocol):
         """Returns the signature of `message`."""
         ...
 
+    def keyid(self) -> Optional[str]:
+        """Returns the ID of this key, or None if not supported."""
+        ...
+
 
 class Verifier(Protocol):
     def verify(self, message: bytes, signature: bytes) -> bool:
         """Returns true if `message` was signed by `signature`."""
+        ...
+
+    def keyid(self) -> Optional[str]:
+        """Returns the ID of this key, or None if not supported."""
         ...
 
 
@@ -88,14 +97,16 @@ def PAE(payloadType: str, payload: bytes) -> bytes:
 
 
 def Sign(payloadType: str, payload: bytes, signer: Signer) -> str:
+    signature = {
+        'keyid': signer.keyid(),
+        'sig': b64enc(signer.sign(PAE(payloadType, payload))),
+    }
+    if not signature['keyid']:
+        del signature['keyid']
     return json.dumps({
-        'payload':
-        b64enc(payload),
-        'payloadType':
-        payloadType,
-        'signatures': [{
-            'sig': b64enc(signer.sign(PAE(payloadType, payload)))
-        }],
+        'payload': b64enc(payload),
+        'payloadType': payloadType,
+        'signatures': [signature],
     })
 
 
@@ -107,6 +118,10 @@ def Verify(json_signature: str, verifiers: VerifierList) -> VerifiedPayload:
     recognizedSigners = []
     for signature in wrapper['signatures']:
         for name, verifier in verifiers:
+            if (signature.get('keyid') is not None and
+                verifier.keyid() is not None and
+                signature.get('keyid') != verifier.keyid()):
+                continue
             if verifier.verify(pae, b64dec(signature['sig'])):
                 recognizedSigners.append(name)
     if not recognizedSigners:
