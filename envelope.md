@@ -52,6 +52,8 @@ envelopes with individual signatures.
 }
 ```
 
+The verification policy on multiple signatures is application-specific.
+
 ### Parsing rules
 
 *   The following fields are REQUIRED and MUST be set, even if empty: `payload`,
