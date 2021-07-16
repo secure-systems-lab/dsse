@@ -53,6 +53,8 @@ envelopes with individual signatures.
 ```
 
 The verification policy on multiple signatures is application-specific.
+For instances, [TUF] and [in-toto] have a threshold policy where `m` out of `n`
+signatures must be valid for payload acceptance.
 
 ### Parsing rules
 
@@ -75,3 +77,6 @@ invalidating the signature:
 
 At this point we do not standardize any other encoding. If a need arises, we may
 do so in the future.
+
+[in-toto]: https://in-toto.io
+[TUF]: https://theupdateframework.io
