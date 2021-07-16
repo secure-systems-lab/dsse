@@ -53,7 +53,7 @@ envelopes with individual signatures.
 ```
 
 The verification policy on multiple signatures is application-specific.
-For instances, [TUF] and [in-toto] have a threshold policy where `m` out of `n`
+For instance, [TUF] and [in-toto] have a threshold policy where `m` out of `n`
 signatures must be valid to accept the payload.
 
 ### Parsing rules
