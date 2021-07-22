@@ -103,6 +103,15 @@ To verify:
 Either standard or URL-safe base64 encodings are allowed. Signers may use
 either, and verifiers **MUST** accept either.
 
+## Multi-signature Verification
+
+Multi-signature enhances the security by allowing multiple signers to sign the
+same payload. The resulted signatures are encoded and transmitted preferably
+using the recommended [JSON envelope](envelope.md).
+
+A `(t, n)`-[JSON envelope](envelope.md) is valid if the enclosed signatures pass
+the verification against at least `t` of `n` unique public keys.
+
 ## Test Vectors
 
 See [reference implementation](implementation/signing_spec.py). Here is an
