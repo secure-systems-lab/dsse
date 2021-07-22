@@ -109,10 +109,10 @@ Multi-signature enhances the security by allowing multiple signers to sign the
 same payload. The resulted signatures are encoded and transmitted preferably
 using the recommended [JSON envelope](envelope.md).
 
-A `(t, n)`-[JSON envelope](envelope.md) is valid if the enclosed signatures pass
-the verification against at least `t` of `n` unique trusted public keys.
+A `(t, n)`-ENVELOPE is valid if the enclosed signatures pass the verification
+against at least `t` of `n` unique trusted public keys.
 
-To verify a `(t, n)`-ENVELOPE against `n` unique trusted public keys:
+To verify a `(t, n)`-ENVELOPE:
 
 -   Receive and decode SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURES from ENVELOPE.
     Reject if decoding fails.
