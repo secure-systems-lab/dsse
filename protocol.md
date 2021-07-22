@@ -110,7 +110,23 @@ same payload. The resulted signatures are encoded and transmitted preferably
 using the recommended [JSON envelope](envelope.md).
 
 A `(t, n)`-[JSON envelope](envelope.md) is valid if the enclosed signatures pass
-the verification against at least `t` of `n` unique public keys.
+the verification against at least `t` of `n` unique trusted public keys.
+
+To verify a `(t, n)`-ENVELOPE against `n` unique trusted public keys:
+
+-   Receive and decode SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURES from ENVELOPE.
+    Reject if decoding fails.
+-   For each (SIGNATURE, KEYID) in SIGNATURES,
+    -   Optionally, filter acceptable public keys by KEYID.
+    -   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Skip
+        over if the verification fails.
+    -   Add the accepted public key to the set ACCEPTED_KEYS.
+    -   Optionally, break if the cardinality of ACCEPTED_KEYS is greater or
+        equal to `t`.
+-   Reject if the cardinality of ACCEPTED_KEYS is less than `t`.
+-   Reject if PAYLOAD_TYPE is not a supported type.
+-   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
+    fails.
 
 ## Test Vectors
 
