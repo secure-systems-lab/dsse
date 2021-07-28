@@ -106,7 +106,7 @@ either, and verifiers **MUST** accept either.
 ## Multi-signature Verification
 
 Multi-signature enhances the security by allowing multiple signers to sign the
-same payload. The resulted signatures are encoded and transmitted preferably
+same payload. The resulting signatures are encoded and transmitted, preferably
 using the recommended [JSON envelope](envelope.md).
 
 A `(t, n)`-ENVELOPE is valid if the enclosed signatures pass the verification
