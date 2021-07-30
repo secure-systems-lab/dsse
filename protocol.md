@@ -110,7 +110,8 @@ same payload. The resulting signatures are encoded and transmitted, preferably
 using the recommended [JSON envelope](envelope.md).
 
 A `(t, n)`-ENVELOPE is valid if the enclosed signatures pass the verification
-against at least `t` of `n` unique trusted public keys.
+against at least `t` of `n` unique trusted public keys where `t` is
+application-specific.
 
 To verify a `(t, n)`-ENVELOPE:
 
