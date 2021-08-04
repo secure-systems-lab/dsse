@@ -103,6 +103,31 @@ To verify:
 Either standard or URL-safe base64 encodings are allowed. Signers may use
 either, and verifiers **MUST** accept either.
 
+## Multi-signature Verification
+
+Multi-signature enhances the security by allowing multiple signers to sign the
+same payload. The resulting signatures are encoded and transmitted, preferably
+using the recommended [JSON envelope](envelope.md).
+
+A `(t, n)`-ENVELOPE is valid if the enclosed signatures pass the verification
+against at least `t` of `n` unique trusted public keys where `t` is
+application-specific.
+
+To verify a `(t, n)`-ENVELOPE:
+
+-   Receive and decode SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURES from ENVELOPE.
+    Reject if decoding fails.
+-   For each (SIGNATURE, KEYID) in SIGNATURES,
+    -   Optionally, filter acceptable public keys by KEYID.
+    -   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Skip
+        over if the verification fails.
+    -   Add the accepted public key to the set ACCEPTED_KEYS.
+    -   Break if the cardinality of ACCEPTED_KEYS is greater or equal to `t`.
+-   Reject if the cardinality of ACCEPTED_KEYS is less than `t`.
+-   Reject if PAYLOAD_TYPE is not a supported type.
+-   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
+    fails.
+
 ## Test Vectors
 
 See [reference implementation](implementation/signing_spec.py). Here is an
