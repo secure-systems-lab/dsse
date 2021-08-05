@@ -27,8 +27,9 @@ There is no other simple, foolproof signature scheme that we are aware of.
     CA for `x5c`. It also requires a JSON library even if the payload is not
     JSON, though this is a minor issue.
 
-*   [PASETO] is JSON-specific and too opinionated. For example, it mandates
-    ed25519 signatures, which may not be useful in all cases.
+*   [PASETO] is too opinionated to be used in all cases. For example, it
+    mandates ed25519 signatures, which [Google Cloud KMS] does not support.
+    PASETO also requires JSON payloads, which may not be desirable in all cases.
 
 The intent of this project is to define a minimal signature scheme that avoids
 these issues.
@@ -118,11 +119,20 @@ Rationales for specific decisions:
 
     -   See [Motivation](#motivation).
 
--   Why use PAE?
+-   Why use a pre-authentication encoding (PAE)?
 
     -   Because we need an unambiguous way of serializing two fields,
-        payloadType and payload. PAE is already documented and good enough. No
-        need to reinvent the wheel.
+        payloadType and payload. PASETO already solved this problem by
+        developing its PAE, which is where we got the idea and the name.
+        [ed25519ctx] uses the same idea, though it was developed independently.
+
+-   Why not use PASETO's PAE?
+
+    -   Originally we did, but the minor difficulty of working with binary
+        encoding led us to develop a simpler ASCII-based PAE. While we were at
+        it, we switched to using a fixed number of inputs and added a version
+        string ("DSSEv1") to allow for future changes.
+        ([more info](https://github.com/secure-systems-lab/dsse/issues/27))
 
 -   Why not stay backwards compatible by requiring the payload to always be JSON
     with a "_type" field? Then if you want a non-JSON payload, you could simply
@@ -155,6 +165,8 @@ and new envelope format by detecting the presence of the `payload` field (new
 format) vs `signed` field (old format).
 
 [Canonical JSON]: http://wiki.laptop.org/go/Canonical_JSON
+[ed25519ctx]: https://www.cryptologie.net/article/497/eddsa-ed25519-ed25519-ietf-ed25519ph-ed25519ctx-hasheddsa-pureeddsa-wtf/
+[Google Cloud KMS]: https://cloud.google.com/security-key-management
 [in-toto]: https://in-toto.io
 [JWS]: https://tools.ietf.org/html/rfc7515
 [PASETO]: https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig
