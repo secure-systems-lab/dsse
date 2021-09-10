@@ -42,5 +42,12 @@ See [Background](background.md) for further motivation.
 of the docs that currently reference the old format as "current", "existing",
 etc. -->
 
-*   [in-toto](https://in-toto.io) (pending [ITE-5](https://github.com/in-toto/ITE/pull/13))
-*   [TUF](https://theupdateframework.io) (pending)
+*   [in-toto](https://in-toto.io) (pending implementation of [ITE-5](https://github.com/in-toto/ITE/blob/master/ITE/5/README.adoc))
+*   [TUF](https://theupdateframework.io) (pending implementation of [TAP-17](https://github.com/theupdateframework/taps/pull/138))
+
+## How can we use it?
+
+* There is a Python implementation in [this repository](implementation/).
+* There's a DSSE library for Go in [go-securesystemslib](https://github.com/secure-systems-lab/go-securesystemslib/tree/main/dsse).
+* SigStore includes a [Go implementation](https://github.com/sigstore/sigstore/tree/main/pkg/signature/dsse)
+  that supports hardware tokens, cloud KMS systems, and more.
