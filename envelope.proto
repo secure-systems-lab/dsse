@@ -13,12 +13,13 @@ message Envelope {
   string payloadType = 2;
 
   // Signature over:
-  //     le64(2) || le64(len(utf8(payloadType))) || utf8(payloadType) ||
-  //         le64(len(payload)) || payload
-  // where:
-  //     le64(n) := 64-bit little-endian encoding of integer `n`, 0 <= n < 2^63
-  //     len(s) := number of octets in byte sequence `s`
-  //     utf8(s) := UTF-8 encoding of unicode string `s`
+  //     PAE(type, body)
+  // Where PAE is defined as:
+  // PAE(type, body) = "DSSEv1" + SP + LEN(type) + SP + type + SP + LEN(body) + SP + body
+  // +               = concatenation
+  // SP              = ASCII space [0x20]
+  // "DSSEv1"        = ASCII [0x44, 0x53, 0x53, 0x45, 0x76, 0x31]
+  // LEN(s)          = ASCII decimal encoding of the byte length of s, with no leading zeros
   // REQUIRED (length >= 1).
   repeated Signature signatures = 3;
 }
