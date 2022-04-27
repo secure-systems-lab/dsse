@@ -23,7 +23,7 @@ the following form, called the "JSON envelope":
   "signatures": [{
     "keyid": "<KEYID>",
     "sig": "<Base64(SIGNATURE)>",
-    "cert": "<PEM(CERTIFICATE)>"
+    "cert": "<PEM(CERTIFICATE_CHAIN)>"
   }]
 }
 ```

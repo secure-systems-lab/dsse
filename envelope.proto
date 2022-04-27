@@ -33,7 +33,7 @@ message Signature {
   // OPTIONAL.
   string keyid = 2;
 
-  // *Unauthenticated* PEM encoded X.509 certificate corresponding to the public key.
+  // *Unauthenticated* PEM encoded X.509 certificate chain corresponding to the public key.
   // OPTIONAL.
   string cert = 3;
 }

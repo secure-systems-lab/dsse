@@ -57,7 +57,7 @@ class Signer(Protocol):
         ...
 
     def certificate(self) -> Optional[str]:
-        """Returns the certificate of the key, or None if not supported."""
+        """Returns the cert chain of the key, or None if not supported."""
 
 
 class Verifier(Protocol):

@@ -53,10 +53,11 @@ CERTIFICATE     | string | No       | No
     decisions; it may only be used to narrow the selection of possible keys to
     try.
 
-*   CERTIFICATE: Optional, unauthenticated PEM encoded X.509 certificate for the key
-    used to sign the message. As with Sign(), details are agreed upon
-    out-of-band by the signer and verifier. This ensures the necessary information
-    to verify the signature remains alongside the metadata.
+*   CERTIFICATE: Optional, unauthenticated PEM encoded X.509 certificate chain for 
+    the key used to sign the message. As with Sign(), details on the trusted root 
+    certificates are agreed upon out-of-band by the signer and verifier. This 
+    ensures the necessary information to verify the signature remains alongside 
+    the metadata.
 
 Functions:
 
@@ -102,7 +103,7 @@ To verify:
 -   Optionally, filter acceptable public keys by KEYID.
 -   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Reject if
     the verification fails.
--   Optionally, verify the signing key's CERTIFICATE links back to a trusted root.
+-   Optionally, verify the signing key's CERTIFICATE chains back to a trusted root.
 -   Reject if PAYLOAD_TYPE is not a supported type.
 -   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
     fails.
