@@ -23,6 +23,7 @@ Name            | Type   | Required | Authenticated
 SERIALIZED_BODY | bytes  | Yes      | Yes
 PAYLOAD_TYPE    | string | Yes      | Yes
 KEYID           | string | No       | No
+CERTIFICATE     | string | No       | No
 
 *   SERIALIZED_BODY: Arbitrary byte sequence to be signed.
 
@@ -52,6 +53,11 @@ KEYID           | string | No       | No
     decisions; it may only be used to narrow the selection of possible keys to
     try.
 
+*   CERTIFICATE: Optional, unauthenticated PEM encoded X.509 certificate for the key
+    used to sign the message. As with Sign(), details are agreed upon
+    out-of-band by the signer and verifier. This ensures the necessary information
+    to verify the signature remains alongside the metadata.
+
 Functions:
 
 *   PAE() is the "Pre-Authentication Encoding", where parameters `type` and
@@ -77,7 +83,7 @@ Functions:
 Out of band:
 
 -   Agree on a PAYLOAD_TYPE and cryptographic details, optionally including
-    KEYID.
+    KEYID and trusted root certificates.
 
 To sign:
 
@@ -90,12 +96,13 @@ To sign:
 
 To verify:
 
--   Receive and decode SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, and KEYID, such
-    as from the recommended [JSON envelope](envelope.md). Reject if decoding
-    fails.
+-   Receive and decode SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, KEYID, and 
+    CERTIFICATE such as from the recommended [JSON envelope](envelope.md). 
+    Reject if decoding fails.
 -   Optionally, filter acceptable public keys by KEYID.
 -   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Reject if
     the verification fails.
+-   Optionally, verify the signing key's CERTIFICATE links back to a trusted root.
 -   Reject if PAYLOAD_TYPE is not a supported type.
 -   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
     fails.

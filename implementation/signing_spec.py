@@ -56,6 +56,9 @@ class Signer(Protocol):
         """Returns the ID of this key, or None if not supported."""
         ...
 
+    def certificate(self) -> Optional[str]:
+        """Returns the certificate of the key, or None if not supported."""
+
 
 class Verifier(Protocol):
     def verify(self, message: bytes, signature: bytes) -> bool:
@@ -66,9 +69,15 @@ class Verifier(Protocol):
         """Returns the ID of this key, or None if not supported."""
         ...
 
+class RootPool(Protocol):
+    def verify(self, certificate: bytes) -> bool:
+        """Returns true if `certificate` chains back to the Root pool."""
 
 # Collection of verifiers, each of which is associated with a name.
 VerifierList = Iterable[Tuple[str, Verifier]]
+
+# A root certificate pool.
+Root = RootPool
 
 
 @dataclasses.dataclass
@@ -100,9 +109,12 @@ def Sign(payloadType: str, payload: bytes, signer: Signer) -> str:
     signature = {
         'keyid': signer.keyid(),
         'sig': b64enc(signer.sign(PAE(payloadType, payload))),
+        'cert': signer.cert(),
     }
     if not signature['keyid']:
         del signature['keyid']
+    if not signature['cert']:
+        del signature['cert']
     return json.dumps({
         'payload': b64enc(payload),
         'payloadType': payloadType,
@@ -110,7 +122,7 @@ def Sign(payloadType: str, payload: bytes, signer: Signer) -> str:
     })
 
 
-def Verify(json_signature: str, verifiers: VerifierList) -> VerifiedPayload:
+def Verify(json_signature: str, verifiers: VerifierList, root: RootPool) -> VerifiedPayload:
     wrapper = json.loads(json_signature)
     payloadType = wrapper['payloadType']
     payload = b64dec(wrapper['payload'])
@@ -122,8 +134,9 @@ def Verify(json_signature: str, verifiers: VerifierList) -> VerifiedPayload:
                 verifier.keyid() is not None and
                 signature.get('keyid') != verifier.keyid()):
                 continue
-            if verifier.verify(pae, b64dec(signature['sig'])):
-                recognizedSigners.append(name)
+            if (verifier.verify(pae, b64dec(signature['sig'])) and
+                root.verify(signature['cert'])):
+                    recognizedSigners.append(name)
     if not recognizedSigners:
         raise ValueError('No valid signature found')
     return VerifiedPayload(payloadType, payload, recognizedSigners)

@@ -22,7 +22,8 @@ the following form, called the "JSON envelope":
   "payloadType": "<PAYLOAD_TYPE>",
   "signatures": [{
     "keyid": "<KEYID>",
-    "sig": "<Base64(SIGNATURE)>"
+    "sig": "<Base64(SIGNATURE)>",
+    "cert": "<PEM(CERTIFICATE)>"
   }]
 }
 ```
@@ -32,6 +33,8 @@ See [Protocol](protocol.md) for a definition of parameters and functions.
 Base64() is [Base64 encoding](https://tools.ietf.org/html/rfc4648), transforming
 a byte sequence to a unicode string. Either standard or URL-safe encoding is
 allowed.
+
+PEM() is a [PEM encoding](), transforming a DER (binary) encoded X.509 certificate to a base64 encoding with a one-line header and footer.
 
 ### Multiple signatures
 
@@ -44,10 +47,12 @@ envelopes with individual signatures.
   "payloadType": "<PAYLOAD_TYPE>",
   "signatures": [{
       "keyid": "<KEYID_1>",
-      "sig": "<SIG_1>"
+      "sig": "<SIG_1>",
+      "cert": "<CERT_1>"
     }, {
       "keyid": "<KEYID_2>",
-      "sig": "<SIG_2>"
+      "sig": "<SIG_2>",
+      "cert": "<CERT_2>"
   }]
 }
 ```
@@ -56,7 +61,7 @@ envelopes with individual signatures.
 
 *   The following fields are REQUIRED and MUST be set, even if empty: `payload`,
     `payloadType`, `signature`, `signature.sig`.
-*   The following fields are OPTIONAL and MAY be unset: `signature.keyid`.
+*   The following fields are OPTIONAL and MAY be unset: `signature.keyid`, `signature.cert`
     An unset field MUST be treated the same as set-but-empty.
 *   Producers, or future versions of the spec, MAY add additional fields.
     Consumers MUST ignore unrecognized fields.

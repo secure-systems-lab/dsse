@@ -32,4 +32,8 @@ message Signature {
   // *Unauthenticated* hint identifying which public key was used.
   // OPTIONAL.
   string keyid = 2;
+
+  // *Unauthenticated* PEM encoded X.509 certificate corresponding to the public key.
+  // OPTIONAL.
+  string cert = 3;
 }
