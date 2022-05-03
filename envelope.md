@@ -34,7 +34,7 @@ Base64() is [Base64 encoding](https://tools.ietf.org/html/rfc4648), transforming
 a byte sequence to a unicode string. Either standard or URL-safe encoding is
 allowed.
 
-PEM() is a [PEM encoding](), transforming a DER (binary) encoded X.509 certificate to a base64 encoding with a one-line header and footer.
+PEM() is a [PEM encoding](https://datatracker.ietf.org/doc/html/rfc1421), transforming a DER (binary) encoded X.509 certificate to a base64 encoding with a one-line header and footer.
 
 ### Multiple signatures
 

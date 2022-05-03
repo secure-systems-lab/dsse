@@ -84,7 +84,7 @@ Functions:
 Out of band:
 
 -   Agree on a PAYLOAD_TYPE and cryptographic details, optionally including
-    KEYID and trusted root certificates.
+    KEYID and trusted root certificates and constraints.
 
 To sign:
 
@@ -92,8 +92,8 @@ To sign:
     SERIALIZED_BODY.
 -   Sign PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Call the result SIGNATURE.
 -   Optionally, compute a KEYID.
--   Encode and transmit SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, and KEYID,
-    preferably using the recommended [JSON envelope](envelope.md).
+-   Encode and transmit SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, CERTIFICATE, 
+    and KEYID, preferably using the recommended [JSON envelope](envelope.md).
 
 To verify:
 
@@ -101,9 +101,10 @@ To verify:
     CERTIFICATE such as from the recommended [JSON envelope](envelope.md). 
     Reject if decoding fails.
 -   Optionally, filter acceptable public keys by KEYID.
--   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Reject if
-    the verification fails.
--   Optionally, verify the signing key's CERTIFICATE chains back to a trusted root.
+-   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY) using 
+    the predefined roots of trust and constraints optionally CERTIFICATE. If 
+    CERTIFICATE is specified, it MUST be verified against a trusted root 
+    certificate. Reject if the verification fails.
 -   Reject if PAYLOAD_TYPE is not a supported type.
 -   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
     fails.
@@ -127,8 +128,10 @@ To verify a `(t, n)`-ENVELOPE:
     Reject if decoding fails.
 -   For each (SIGNATURE, KEYID) in SIGNATURES,
     -   Optionally, filter acceptable public keys by KEYID.
-    -   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Skip
-        over if the verification fails.
+    -   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY) using 
+        the predefined roots of trust and constraints optionally CERTIFICATE. If 
+        CERTIFICATE is specified, it MUST be verified against a trusted root 
+        certificate. Reject if the verification fails.
     -   Add the accepted public key to the set ACCEPTED_KEYS.
     -   Break if the cardinality of ACCEPTED_KEYS is greater or equal to `t`.
 -   Reject if the cardinality of ACCEPTED_KEYS is less than `t`.

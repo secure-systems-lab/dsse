@@ -41,7 +41,11 @@ PAE:
 b'DSSEv1 29 http://example.com/HelloWorld 11 hello world'
 """
 
-import base64, binascii, dataclasses, json, struct
+import base64
+import binascii
+import dataclasses
+import json
+import struct
 
 # Protocol requires Python 3.8+.
 from typing import Iterable, List, Optional, Protocol, Tuple
@@ -57,11 +61,13 @@ class Signer(Protocol):
         ...
 
     def certificate(self) -> Optional[str]:
-        """Returns the cert chain of the key, or None if not supported."""
+        """Returns the cert chain of the key in PEM format, or None if not supported."""
 
-
+# If a Verifier does not accept certificates, it MUST ignore `cert`,
+# If it does, it MUST verify `cert` against a known root pool and decided constraints
+# before verifying that `signature` was signed by `cert`. 
 class Verifier(Protocol):
-    def verify(self, message: bytes, signature: bytes) -> bool:
+    def verify(self, message: bytes, signature: bytes, cert: Optional[str]) -> bool:
         """Returns true if `message` was signed by `signature`."""
         ...
 
@@ -69,15 +75,9 @@ class Verifier(Protocol):
         """Returns the ID of this key, or None if not supported."""
         ...
 
-class RootPool(Protocol):
-    def verify(self, certificate: bytes) -> bool:
-        """Returns true if `certificate` chains back to the Root pool."""
 
 # Collection of verifiers, each of which is associated with a name.
 VerifierList = Iterable[Tuple[str, Verifier]]
-
-# A root certificate pool.
-Root = RootPool
 
 
 @dataclasses.dataclass
@@ -101,8 +101,8 @@ def b64dec(m: str) -> bytes:
 
 def PAE(payloadType: str, payload: bytes) -> bytes:
     return b'DSSEv1 %d %b %d %b' % (
-            len(payloadType), payloadType.encode('utf-8'),
-            len(payload), payload)
+        len(payloadType), payloadType.encode('utf-8'),
+        len(payload), payload)
 
 
 def Sign(payloadType: str, payload: bytes, signer: Signer) -> str:
@@ -122,7 +122,7 @@ def Sign(payloadType: str, payload: bytes, signer: Signer) -> str:
     })
 
 
-def Verify(json_signature: str, verifiers: VerifierList, root: RootPool) -> VerifiedPayload:
+def Verify(json_signature: str, verifiers: VerifierList) -> VerifiedPayload:
     wrapper = json.loads(json_signature)
     payloadType = wrapper['payloadType']
     payload = b64dec(wrapper['payload'])
@@ -132,11 +132,10 @@ def Verify(json_signature: str, verifiers: VerifierList, root: RootPool) -> Veri
         for name, verifier in verifiers:
             if (signature.get('keyid') is not None and
                 verifier.keyid() is not None and
-                signature.get('keyid') != verifier.keyid()):
+                    signature.get('keyid') != verifier.keyid()):
                 continue
-            if (verifier.verify(pae, b64dec(signature['sig'])) and
-                root.verify(signature['cert'])):
-                    recognizedSigners.append(name)
+            if verifier.verify(pae, b64dec(signature['sig']), signature.get('cert')):
+                recognizedSigners.append(name)
     if not recognizedSigners:
         raise ValueError('No valid signature found')
     return VerifiedPayload(payloadType, payload, recognizedSigners)
