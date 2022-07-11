@@ -122,8 +122,9 @@ To verify a `(t, n)`-ENVELOPE:
     -   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Skip
         over if the verification fails.
     -   Add the accepted public key to the set ACCEPTED_KEYS.
-    -   Break if the cardinality of ACCEPTED_KEYS is greater or equal to `t`.
--   Reject if the cardinality of ACCEPTED_KEYS is less than `t`.
+    -   Break if the number of unique keys in ACCEPTED_KEYS is greater or equal
+        to `t`.
+-   Reject if the unique keys in ACCEPTED_KEYS is less than `t`.
 -   Reject if PAYLOAD_TYPE is not a supported type.
 -   Parse SERIALIZED_BODY according to PAYLOAD_TYPE. Reject if the parsing
     fails.
