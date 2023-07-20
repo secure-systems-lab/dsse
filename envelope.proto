@@ -2,6 +2,8 @@ syntax = "proto3";
 
 package io.intoto;
 
+import "google/protobuf/struct.proto";
+
 // An authenticated message of arbitrary type.
 message Envelope {
   // Message to be signed. (In JSON, this is encoded as base64.)
@@ -32,4 +34,19 @@ message Signature {
   // *Unauthenticated* hint identifying which public key was used.
   // OPTIONAL.
   string keyid = 2;
+
+  // *Unauthenticated* field that can record additional information pertaining
+  // to the signature.
+  // OPTIONAL.
+  Extension extension = 3;
+}
+
+message Extension {
+  // Unambiguously identifies how to interpret extension fields.
+  // REQUIRED.
+  string kind = 1;
+
+  // Extension fields.
+  // REQUIRED.
+  google.protobuf.Struct ext = 2;
 }
