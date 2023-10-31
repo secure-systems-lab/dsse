@@ -2,7 +2,7 @@
 
 March 03, 2021
 
-Version 1.0.0
+Version 1.1.0
 
 This document describes the recommended data structure for storing DSSE
 signatures, which we call the "JSON Envelope". For the protocol/algorithm, see
@@ -16,9 +16,12 @@ to define the schema. JSON is the only recommended encoding.)
 The standard data structure for storing a signed message is a JSON message of
 the following form, called the "JSON envelope":
 
-```json
+```jsonc
 {
-  "payload": "<Base64(SERIALIZED_BODY)>",
+  // Exactly one of the following must be set:
+  "payload": "<Base64Encode(SERIALIZED_BODY)>",
+  "payloadUtf8": "<Utf8Decode(SERIALIZED_BODY)>",
+  // End oneof
   "payloadType": "<PAYLOAD_TYPE>",
   "signatures": [{
     "keyid": "<KEYID>",
@@ -29,9 +32,22 @@ the following form, called the "JSON envelope":
 
 See [Protocol](protocol.md) for a definition of parameters and functions.
 
-Base64() is [Base64 encoding](https://tools.ietf.org/html/rfc4648), transforming
-a byte sequence to a unicode string. Either standard or URL-safe encoding is
-allowed.
+Exactly one of `payload` or `payloadUtf8` MUST be set:
+
+-   `payload` supports arbitrary SERIALIZED_BODY. 
+    [Base64Encode()](https://tools.ietf.org/html/rfc4648) transforms a byte
+    sequence to a Unicode string. Base64 has a fixed 33% space overhead but
+    supports payloads that are not necessarily valid UTF-8. Either standard or
+    URL-safe encoding is allowed.
+
+-   `payloadUtf8` only supports valid
+    [UTF-8](https://tools.ietf.org/html/rfc3629) SERIALIZED_BODY. `Utf8Decode()`
+    converts that UTF-8 byte sequence to a Unicode string. Regular JSON string
+    escaping applies, but this is usually more compact and amenable to
+    compression than Base64.
+
+Note: The choice of `payload` vs `payloadUtf8` does not impact the
+[the signing or the signatures](protocol.md#signature-definition).
 
 ### Multiple signatures
 
@@ -54,8 +70,8 @@ envelopes with individual signatures.
 
 ### Parsing rules
 
-*   The following fields are REQUIRED and MUST be set, even if empty: `payload`,
-    `payloadType`, `signature`, `signature.sig`.
+*   The following fields are REQUIRED and MUST be set, even if empty:
+    exactly one of {`payload` or `payloadUtf8`}, `payloadType`, `signature`, `signature.sig`.
 *   The following fields are OPTIONAL and MAY be unset: `signature.keyid`.
     An unset field MUST be treated the same as set-but-empty.
 *   Producers, or future versions of the spec, MAY add additional fields.
@@ -75,5 +91,8 @@ At this point we do not standardize any other encoding. If a need arises, we may
 do so in the future.
 
 ## Change history
+* 1.1.0:
+    * Added support for UTF-8 encoded payload and `payloadUtf8` field.
+
 * 1.0.0: Initial version.
 

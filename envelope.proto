@@ -4,10 +4,15 @@ package io.intoto;
 
 // An authenticated message of arbitrary type.
 message Envelope {
-  // Message to be signed. (In JSON, this is encoded as base64.)
+  // Message to be signed.
   // REQUIRED.
-  bytes payload = 1;
-
+  oneof payload_encoding {
+    // Raw bytes. In JSON, this is encoded as base64.
+    bytes payload = 1;
+    // Unicode string, where the signed byte stream (SERIALIZED_BODY) is the UTF-8 encoding of `payloadUtf8`. In JSON, this is a regular string.
+    string payloadUtf8 = 4;
+  }
+  
   // String unambiguously identifying how to interpret payload.
   // REQUIRED.
   string payloadType = 2;
