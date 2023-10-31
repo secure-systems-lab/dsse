@@ -73,3 +73,7 @@ invalidating the signature:
 
 At this point we do not standardize any other encoding. If a need arises, we may
 do so in the future.
+
+## Change history
+* 1.0.0: Initial version.
+
