@@ -175,3 +175,7 @@ Result (using the recommended [JSON envelope](envelope.md)):
 [JWS]: https://tools.ietf.org/html/rfc7515
 [PASETO]: https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig
 [TUF]: https://theupdateframework.io
+
+## Change history
+* 1.0.0: Initial version.
+
