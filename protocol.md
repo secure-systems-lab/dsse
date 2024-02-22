@@ -1,6 +1,6 @@
 # DSSE Protocol
 
-March 03, 2021
+February 21, 2024
 
 Version 1.0.0
 
@@ -54,15 +54,17 @@ EXTENSION       | object | No       | No
     try.
 
 *   EXTENSION: Optional, unauthenticated object used to store signature-specific
-    information. Extensions are identified by a type field that unambiguously
-    describes the fields for the extension. The details for each extension's
-    type and its fields must be agreed upon out-of-band by the signer and
-    verifier, though some well-known extension types may be listed and defined
+    information. Extensions are identified by a `kind` field that unambiguously
+    describes the fields for the extension. The details for each extension and
+    its fields must be agreed upon out-of-band by the signer and verifier,
+    though some well-known extensions may be [listed](extensions.md) and defined
     in the DSSE specification. Verifiers MUST use extension fields as a matter
     of convenience and they MUST ensure that extension fields are not relied
     upon exclusively for security decisions. For example, an extension field
     that contains an X.509 certificate chain MUST NOT be trusted to provide the
-    root certificate, but only intermediate certificates.
+    root certificate, but only intermediate certificates. Similarly, the
+    extension MUST NOT be trusted to provide the public key that must be used to
+    verify the signature.
 
 Functions:
 
@@ -98,8 +100,8 @@ To sign:
 -   Sign PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Call the result SIGNATURE.
 -   Optionally, compute a KEYID.
 -   Optionally, include signature specific information as an EXTENSION.
--   Encode and transmit SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, and KEYID,
-    preferably using the recommended [JSON envelope](envelope.md).
+-   Encode and transmit SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, KEYID, and
+    EXTENSION, preferably using the recommended [JSON envelope](envelope.md).
 
 To verify:
 
