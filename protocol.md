@@ -1,6 +1,6 @@
 # DSSE Protocol
 
-March 03, 2021
+February 21, 2024
 
 Version 1.0.0
 
@@ -23,6 +23,7 @@ Name            | Type   | Required | Authenticated
 SERIALIZED_BODY | bytes  | Yes      | Yes
 PAYLOAD_TYPE    | string | Yes      | Yes
 KEYID           | string | No       | No
+EXTENSION       | object | No       | No
 
 *   SERIALIZED_BODY: Arbitrary byte sequence to be signed.
 
@@ -52,6 +53,19 @@ KEYID           | string | No       | No
     decisions; it may only be used to narrow the selection of possible keys to
     try.
 
+*   EXTENSION: Optional, unauthenticated object used to store signature-specific
+    information. Extensions are identified by a `kind` field that unambiguously
+    describes the fields for the extension. The details for each extension and
+    its fields must be agreed upon out-of-band by the signer and verifier,
+    though some well-known extensions may be [listed](extensions.md) and defined
+    in the DSSE specification. Verifiers MUST use extension fields as a matter
+    of convenience and they MUST ensure that extension fields are not relied
+    upon exclusively for security decisions. For example, an extension field
+    that contains an X.509 certificate chain MUST NOT be trusted to provide the
+    root certificate, but only intermediate certificates. Similarly, the
+    extension MUST NOT be trusted to provide the public key that must be used to
+    verify the signature.
+
 Functions:
 
 *   PAE() is the "Pre-Authentication Encoding", where parameters `type` and
@@ -77,7 +91,7 @@ Functions:
 Out of band:
 
 -   Agree on a PAYLOAD_TYPE and cryptographic details, optionally including
-    KEYID.
+    KEYID and EXTENSION.
 
 To sign:
 
@@ -85,15 +99,19 @@ To sign:
     SERIALIZED_BODY.
 -   Sign PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Call the result SIGNATURE.
 -   Optionally, compute a KEYID.
--   Encode and transmit SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, and KEYID,
-    preferably using the recommended [JSON envelope](envelope.md).
+-   Optionally, include signature specific information as an EXTENSION.
+-   Encode and transmit SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, KEYID, and
+    EXTENSION, preferably using the recommended [JSON envelope](envelope.md).
 
 To verify:
 
--   Receive and decode SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, and KEYID, such
-    as from the recommended [JSON envelope](envelope.md). Reject if decoding
-    fails.
+-   Receive and decode SERIALIZED_BODY, PAYLOAD_TYPE, SIGNATURE, KEYID, and
+    EXTENSION such as from the recommended [JSON envelope](envelope.md). Reject
+    if decoding fails.
 -   Optionally, filter acceptable public keys by KEYID.
+-   Optionally, use EXTENSION fields if available to obtain information that may
+    be required for verification. Reject any significant fields that the
+    verifier must establish separately.
 -   Verify SIGNATURE against PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY). Reject if
     the verification fails.
 -   Reject if PAYLOAD_TYPE is not a supported type.
