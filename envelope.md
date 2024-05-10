@@ -1,8 +1,8 @@
 # DSSE Envelope
 
-March 03, 2021
+May 10, 2024
 
-Version 1.0.0
+Version 1.0.1
 
 This document describes the recommended data structure for storing DSSE
 signatures, which we call the "JSON Envelope". For the protocol/algorithm, see

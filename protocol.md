@@ -1,8 +1,8 @@
 # DSSE Protocol
 
-March 03, 2021
+May 10, 2024
 
-Version 1.0.0
+Version 1.0.1
 
 This document describes the protocol/algorithm for creating and verifying DSSE
 signatures, independent of how they are transmitted or stored. For the
