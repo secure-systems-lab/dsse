@@ -51,3 +51,10 @@ etc. -->
 * There's a DSSE library for Go in [go-securesystemslib](https://github.com/secure-systems-lab/go-securesystemslib/tree/main/dsse).
 * SigStore includes a [Go implementation](https://github.com/sigstore/sigstore/tree/main/pkg/signature/dsse)
   that supports hardware tokens, cloud KMS systems, and more.
+
+## Versioning
+
+The DSSE specification follows semantic versioning, and is released using Git
+tags. The `master` branch points to the latest release. Changes to the
+specification are submitted against the `devel` branch, and are merged into
+`master` when they are ready to be released.
