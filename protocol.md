@@ -2,7 +2,7 @@
 
 May 10, 2024
 
-Version 1.0.1
+Version 1.0.2
 
 This document describes the protocol/algorithm for creating and verifying DSSE
 signatures, independent of how they are transmitted or stored. For the
@@ -102,6 +102,12 @@ To verify:
 
 Either standard or URL-safe base64 encodings are allowed. Signers may use
 either, and verifiers **MUST** accept either.
+
+**Important:** Implementations MUST ensure that the same SERIALIZED_BODY that is
+verified is the same sent to the application layer. In particular,
+implementations MUST NOT re-parse the envelope after verification to pull out
+the payload. Failure to adhere to this requirement can lead to security
+vulnerabilities.
 
 ## Multi-signature Verification
 

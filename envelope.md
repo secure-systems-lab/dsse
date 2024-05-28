@@ -2,7 +2,7 @@
 
 May 10, 2024
 
-Version 1.0.1
+Version 1.0.2
 
 This document describes the recommended data structure for storing DSSE
 signatures, which we call the "JSON Envelope". For the protocol/algorithm, see
@@ -73,3 +73,14 @@ invalidating the signature:
 
 At this point we do not standardize any other encoding. If a need arises, we may
 do so in the future.
+
+## Security considerations
+
+The following advisories are relevant to all envelope formats, not just the
+standard JSON envelope.
+
+**Important:** Implementations MUST ensure that the same payload bytes that are
+verified are the ones sent to the application layer. In particular,
+implementations MUST NOT re-parse the envelope after verification to pull out
+the payload. Failure to adhere to this requirement can lead to security
+vulnerabilities.
