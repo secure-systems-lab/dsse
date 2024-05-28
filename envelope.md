@@ -76,7 +76,7 @@ do so in the future.
 
 ## Security considerations
 
-The following advisories are relevant to all envelop formats, not just the
+The following advisories are relevant to all envelope formats, not just the
 standard JSON envelope.
 
 **Important:** Implementations MUST ensure that the same payload bytes that are
