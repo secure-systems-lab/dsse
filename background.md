@@ -17,7 +17,7 @@ There is no other simple, foolproof signature scheme that we are aware of.
     key management problem.
 
 *   [TUF] and [in-toto] currently use a scheme that avoids these problems but is
-    JSON-specific and relies on [canonicalization](motivation.md), which is an
+    JSON-specific and relies on [canonicalization](#motivation), which is an
     unnecessarily large attack surface.
 
 *   [JWS], though popular, has a history of
@@ -160,7 +160,7 @@ via the principles laid out in
 TUF.
 
 Verifiers can differentiate between the
-[old](https://github.com/in-toto/docs/blob/master/in-toto-spec.md#42-file-formats-general-principles)
+[old](https://github.com/in-toto/specification/blob/d416c1f334ac6b581f75c0fa65125fb434d7a610/in-toto-spec.md#42-file-formats-general-principles)
 and new envelope format by detecting the presence of the `payload` field (new
 format) vs `signed` field (old format).
 
@@ -169,5 +169,5 @@ format) vs `signed` field (old format).
 [Google Cloud KMS]: https://cloud.google.com/security-key-management
 [in-toto]: https://in-toto.io
 [JWS]: https://tools.ietf.org/html/rfc7515
-[PASETO]: https://github.com/paragonie/paseto/blob/master/docs/01-Protocol-Versions/Version2.md#sig
+[PASETO]: https://github.com/paseto-standard/paseto-spec/blob/master/docs/01-Protocol-Versions/Version2.md#sign
 [TUF]: https://theupdateframework.io
