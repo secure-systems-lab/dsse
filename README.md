@@ -44,6 +44,7 @@ etc. -->
 
 *   [in-toto](https://in-toto.io) (as described in [ITE-5](https://github.com/in-toto/ITE/blob/master/ITE/5/README.adoc), [go](https://github.com/in-toto/go-witness/tree/main/dsse), [python](https://github.com/in-toto/in-toto/blob/d8fa07f5c3c3e052319b1a9b0c06408cdf5b5185/in_toto/common_args.py#L170))
 *   [TUF](https://theupdateframework.io) (pending implementation of [TAP-17](https://github.com/theupdateframework/taps/pull/138))
+*   [gittuf](https://gittuf.dev) (implemented with extensions in [go](https://github.com/gittuf/gittuf/tree/main/internal/third_party/go-securesystemslib/dsse))
 
 ## How can we use it?
 
