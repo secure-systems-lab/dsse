@@ -46,7 +46,7 @@ etc. -->
 *   [TUF](https://theupdateframework.io) (pending implementation of [TAP-17](https://github.com/theupdateframework/taps/pull/138))
 *   [gittuf](https://gittuf.dev) (implemented with extensions in [go](https://github.com/gittuf/gittuf/tree/main/internal/third_party/go-securesystemslib/dsse))
 *   [Sigstore](https://sigstore.dev) supports DSSE as an [entry type](https://github.com/sigstore/rekor/tree/main/pkg/types/dsse)
-*   [Chaiguard Images](https://www.chainguard.dev/unchained/reproducing-chainguards-reproducible-image-builds) use sigstore and in-toto (see above), and support DSSE
+*   [Chainguard Images](https://www.chainguard.dev/unchained/reproducing-chainguards-reproducible-image-builds) use sigstore and in-toto (see above), and support DSSE
 *   [GUAC](https://guac.sh/) GUAC [supports DSSE entries](https://github.com/guacsec/guac/blob/main/pkg/ingestor/parser/dsse/parser_dsse.go) as a data type
 
 ## How can we use it?
