@@ -48,6 +48,7 @@ etc. -->
 *   [Sigstore](https://sigstore.dev) supports DSSE as an [entry type](https://github.com/sigstore/rekor/tree/main/pkg/types/dsse)
 *   [Chainguard Images](https://www.chainguard.dev/unchained/reproducing-chainguards-reproducible-image-builds) use sigstore and in-toto (see above), and support DSSE
 *   [GUAC](https://guac.sh/) GUAC [supports DSSE entries](https://github.com/guacsec/guac/blob/main/pkg/ingestor/parser/dsse/parser_dsse.go) as a data type
+*   [JFrog](https://jfrog.com/) has a [free DSSE Attestation Online Decoder Tool](https://dsse.io/)
 
 ## How can we use it?
 
