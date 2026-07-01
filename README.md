@@ -63,3 +63,9 @@ The DSSE specification follows semantic versioning, and is released using Git
 tags. The `master` branch points to the latest release. Changes to the
 specification are submitted against the `devel` branch, and are merged into
 `master` when they are ready to be released.
+
+## Governance & Licensing
+- [Scope](governance/02-scope.md)
+- [Notices](governance/03-notices.md)
+- [License](governance/04-license.md)
+- [Governance](governance/05-governance.md)
