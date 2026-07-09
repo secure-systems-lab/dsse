@@ -48,6 +48,7 @@ etc. -->
 *   [Sigstore](https://sigstore.dev) supports DSSE as an [entry type](https://github.com/sigstore/rekor-tiles/blob/main/api/proto/rekor/v2/dsse.proto) in Rekor, Sigstore's transparency log
 *   [Chainguard Images](https://www.chainguard.dev/unchained/reproducing-chainguards-reproducible-image-builds) use sigstore and in-toto (see above), and support DSSE
 *   [GUAC](https://guac.sh/) [supports DSSE entries](https://github.com/guacsec/guac/blob/main/pkg/ingestor/parser/dsse/parser_dsse.go) as a data type
+*   [OpenClaw](https://github.com/openclaw/openclaw) is adopting DSSE for signing and verifying hosted skill and plugin feeds ([implementation](https://github.com/openclaw/openclaw/pull/98299))
 *   [JFrog](https://jfrog.com/) has a [free DSSE Attestation Online Decoder Tool](https://dsse.io/)
 
 ## How can we use it?
