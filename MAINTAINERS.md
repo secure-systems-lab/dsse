@@ -10,7 +10,7 @@ specification, their GitHub username, and their affiliation.
 | Mark Lodato | @MarkLodato | Google |
 | Tom Hennen | @TomHennen | Google |
 | Trishank Karthik Kuppusamy | @trishankatdatadog | Datadog |
-| Aditya Sirish A Yelgundhalli | @adityasaky | New York University |
+| Aditya Sirish A Yelgundhalli | @adityasaky | Bloomberg |
 | Marina Moore | @mnm678 | New York University |
 | Joshua Lock | @joshuagl | Verizon |
 | Lukas Pühringer | @lukpueh | New York University |
