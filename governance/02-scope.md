@@ -1,30 +1,75 @@
-# DSSE Specification Scope
+# Scope
 
-This document defines the strict boundaries of the Dead Simple Signing Envelope (DSSE) specification. By aggressively limiting its scope, DSSE provides a predictable, unambiguous cryptographic component designed to integrate safely into broader software supply chain frameworks and automated tooling architectures.
+Under the Community Specification License 1.0, this document defines the scope
+of the specification the DSSE Working Group develops. The licensing
+commitments made by each contributor, including the patent commitment, apply
+to the specification as bounded by this scope.
 
 ## 1. In Scope
 
-The DSSE specification strictly defines the following mechanisms:
+The Working Group develops and maintains:
 
-*   **Pre-Authentication Encoding (PAE):** A deterministic serialization format that securely binds a payload's data to its type definition before cryptographic signing. This ensures that signatures cannot be transplanted across different metadata types.
-*   **Logical Envelope Structure:** A uniform conceptual wrapper that encapsulates the payload, its defined type descriptor, and one or more signatures. 
-*   **Signature Object Schema:** The definition of each entry in the signature set, comprising the signature value and an optional key identifier that serves as a non-authoritative hint for selecting a verification key. This schema is the designated extension point for any additional signature-level fields.
-*   **Multi-Signer Support:** Native architectural support for appending multiple independent signatures to the exact same payload without invalidating existing signatures or requiring nested envelopes.
+*   **The signing and verification protocol** ([protocol.md](../protocol.md)):
+    the definition of a signature as
+    `Sign(PAE(UTF8(PAYLOAD_TYPE), SERIALIZED_BODY))`, the Pre-Authentication
+    Encoding (PAE) that binds the payload bytes to the payload type before
+    signing, and the procedures for signing, verification, and `(t, n)`
+    multi-signature verification of a single payload.
+
+*   **The envelope data structure** ([envelope.md](../envelope.md) and
+    [envelope.proto](../envelope.proto)): the JSON envelope carrying `payload`,
+    `payloadType`, and `signatures`, together with its parsing rules for
+    required, optional, and unrecognized fields.
+
+*   **The signature object**: each entry in `signatures`, consisting of a
+    required signature value (`sig`) and an optional `keyid` — an
+    unauthenticated hint identifying which public key was used, usable only to
+    narrow the selection of keys to try.
+
+*   **Payload type identification**: conventions for the `payloadType` string
+    (Media Type or URI) that identifies both the encoding and the schema of
+    the payload.
+
+*   **Extensibility rules**: the requirement that consumers ignore
+    unrecognized envelope fields, allowing producers and future versions of
+    the specification to add fields without breaking verification.
+
+*   **Envelope encodings**: JSON is the only recommended encoding. The Working
+    Group may standardize additional encodings (such as CBOR or protobuf) in a
+    future version; until it does, other encodings are permitted by
+    applications but not specified here.
+
+*   **Test vectors** accompanying the protocol.
 
 ## 2. Out of Scope
 
-To eliminate parser vulnerabilities, mitigate cross-protocol attacks, and reduce integration friction, the following are explicitly out of scope for DSSE:
+The Working Group does not develop, and this specification does not define:
 
-*   **Payload Canonicalization:** DSSE treats all payloads as opaque byte sequences (typically base64-encoded in text formats). Normalization or canonicalization of the payload structure (e.g., JSON Canonicalization Scheme) is deliberately omitted to prevent parser-level exploits prior to signature verification.
-*   **Encryption and Confidentiality:** DSSE provides authentication and integrity only. It does not define or support mechanisms for payload encryption, privacy, or data masking.
-*   **Cryptographic Algorithm Negotiation:** The envelope does not carry self-describing algorithm headers (for example, declaring whether ECDSA or Ed25519 was used), and it defines no mechanism for negotiating algorithms between signer and verifier. Where the signature schema carries fields that approximate algorithm or key identification, such as the optional key identifier, those fields are hints for key selection only. Verifiers are expected to determine the applicable algorithms out-of-band from the established trust root or verification policy.
-*   **Key Management and Identity Binding:** Trust establishment, PKI, certificate validation, and key distribution are left to external systems (such as Sigstore, SPIFFE, or local policy engines).
-*   **Payload Semantics:** DSSE makes no assertions about the internal validity, schema, or semantic meaning of the payload itself. It only guarantees that a specific entity signed a specific sequence of bytes under a declared payload type.
+*   **Cryptographic algorithms or signature formats.** `Sign()` is an
+    arbitrary digital signature format whose details are agreed upon
+    out-of-band by the signer and verifier. The specification places no
+    restriction on the algorithm or format, carries no self-describing
+    algorithm header, and defines no negotiation mechanism.
 
-## 3. Component Interoperability
+*   **Key management, trust establishment, and identity binding.** Key
+    distribution, PKI, certificate validation, and trust roots are left to
+    external systems. The `keyid` is not a key-management mechanism: it MUST
+    NOT be used for security decisions.
 
-By maintaining these rigid boundaries, DSSE is designed to serve as a discrete, highly verifiable node within larger system architectures. It acts as a standardized interface for attestation and provenance data, allowing independent components and tools across the software supply chain to map, exchange, and verify signed metadata without requiring deep knowledge of the underlying payload structures.
+*   **Payload canonicalization.** The payload is an arbitrary byte sequence
+    (`SERIALIZED_BODY`) transmitted exactly as signed; the verifier verifies
+    it before parsing. No normalization or canonicalization scheme is defined.
 
-DSSE is also independent of any particular serialization or transport. While it is most often represented in JSON for web-based APIs, the logical envelope structure and the PAE mechanism are format-agnostic: an implementation may serialize DSSE using Protocol Buffers, CBOR, XML, or any other structured data format, provided the defined envelope fields are preserved. This independence is a property of the design rather than a component the specification defines, which is why it is described here rather than in Section 1.
+*   **Payload semantics.** The specification makes no assertions about the
+    internal validity, schema, or meaning of the payload. It guarantees only
+    that a specific sequence of bytes was signed under a declared payload
+    type.
+
+*   **Encryption and confidentiality.** The specification provides
+    authentication and integrity only.
+
+*   **Verification policy.** Which keys are trusted, which payload types are
+    supported, and the threshold `t` in `(t, n)` verification are
+    application-specific decisions made outside this specification.
 
 Any changes of Scope are not retroactive.
