@@ -9,7 +9,7 @@ The DSSE specification strictly defines the following mechanisms:
 *   **Pre-Authentication Encoding (PAE):** A deterministic serialization format that securely binds a payload's data to its type definition before cryptographic signing. This ensures that signatures cannot be transplanted across different metadata types.
 *   **Logical Envelope Structure:** A uniform conceptual wrapper that encapsulates the payload, its defined type descriptor, and one or more signatures. 
 *   **Format and Transport Agnosticism:** While frequently represented in JSON for web-based APIs, the DSSE logical structure and PAE mechanism are entirely format-agnostic. DSSE can be natively serialized using Protocol Buffers, CBOR, XML, or any other structured data format, provided the core envelope fields are preserved.
-*   **Multi-Signer Support:** Native architectural support for appending multiple independent signatures (and their respective key identifiers) to the exact same payload without invalidating existing signatures or requiring nested envelopes.
+*   **Multi-Signer Support:** Native architectural support for appending multiple independent signatures to the exact same payload without invalidating existing signatures or requiring nested envelopes.
 
 ## 2. Out of Scope
 
