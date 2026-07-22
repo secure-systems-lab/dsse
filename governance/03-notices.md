@@ -2,7 +2,7 @@
 
 ## Code of Conduct
 
-Contact for Code of Conduct issues or inquiries:  REAL NAME <real@email>
+Contact for Code of Conduct issues or inquiries:  Justin Cappos <jcappos@nyu.edu>, Mark Lodato (@MarkLodato), Santiago Torres-Arias (@SantiagoTorres)
 
 [Ideally list two different individuals above (not a generic mailing list) as someone submitting a Code of Conduct complaint will want to know exactly who is receiving the complaint. We recommend two individuals in the case one of the individuals is the subject of or directly involved in the subject of a complaint.]
 
