@@ -2,13 +2,13 @@
 
 By making a Contribution to this repository, I agree to the terms of the following documents located at [https://github.com/CommunitySpecification/1.0](https://github.com/CommunitySpecification/1.0):
 
-(a) Community Specification License 1.0 (.0_Community_Specification_License-v1.md)
+(a) Community Specification License 1.0 ([01-community-specification-license-v1.md](https://github.com/CommunitySpecification/1.0/blob/main/01-community-specification-license-v1.md))
 
-(b) Community Specification Governance Policy 1.0 (5._Governance.md)
+(b) Community Specification Governance Policy 1.0 ([05-governance.md](https://github.com/CommunitySpecification/1.0/blob/main/05-governance.md))
 
-(c) Community Specification Contribution Policy 1.0 (6._Contributing.md)
+(c) Community Specification Contribution Policy 1.0 ([06-contributing.md](https://github.com/CommunitySpecification/1.0/blob/main/06-contributing.md))
 
-(d) Community Specification Code of Conduct (8._Code_of_Conduct.md)
+(d) Community Specification Code of Conduct ([08-code-of-conduct.md](https://github.com/CommunitySpecification/1.0/blob/main/08-code-of-conduct.md))
 
 
 In addition, for source code contributions, I certify that:
