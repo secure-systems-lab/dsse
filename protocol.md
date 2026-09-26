@@ -138,7 +138,8 @@ To verify a `(t, n)`-ENVELOPE:
 ## Test Vectors
 
 See [reference implementation](implementation/signing_spec.py). Here is an
-example.
+example. The [testvectors](testvectors/) directory has more cases, including
+non-ASCII payload types and multi-signature thresholds.
 
 SERIALIZED_BODY:
 
