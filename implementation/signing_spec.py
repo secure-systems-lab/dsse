@@ -32,13 +32,18 @@ Signing example:
 Verification example:
 
 >>> result = Verify(signature_json, [('mykey', verifier)])
->>> pprint(result)
+>>> result
 VerifiedPayload(payloadType='http://example.com/HelloWorld', payload=b'hello world', recognizedSigners=['mykey'])
 
 PAE:
 
 >>> PAE(payloadType, payload)
 b'DSSEv1 29 http://example.com/HelloWorld 11 hello world'
+
+LEN() counts the bytes of UTF8(PAYLOAD_TYPE), not its characters:
+
+>>> PAE('application/vnd.ex\u00e4mple+json', b'')
+b'DSSEv1 29 application/vnd.ex\xc3\xa4mple+json 0 '
 """
 
 import base64, binascii, dataclasses, json, struct
@@ -91,8 +96,9 @@ def b64dec(m: str) -> bytes:
 
 
 def PAE(payloadType: str, payload: bytes) -> bytes:
+    payloadType = payloadType.encode('utf-8')
     return b'DSSEv1 %d %b %d %b' % (
-            len(payloadType), payloadType.encode('utf-8'),
+            len(payloadType), payloadType,
             len(payload), payload)
 
 
