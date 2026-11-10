@@ -9,8 +9,8 @@ specification, their GitHub username, and their affiliation.
 | Santiago Torres-Arias | @SantiagoTorres | Purdue University |
 | Mark Lodato | @MarkLodato | Google |
 | Tom Hennen | @TomHennen | Google |
-| Trishank Karthik Kuppusamy | @trishankatdatadog | Datadog |
+| Trishank Karthik Kuppusamy | @trishankatdatadog | Apple |
 | Aditya Sirish A Yelgundhalli | @adityasaky | Bloomberg |
-| Marina Moore | @mnm678 | New York University |
+| Marina Moore | @mnm678 | Edera |
 | Joshua Lock | @joshuagl | Verizon |
 | Lukas Pühringer | @lukpueh | New York University |
