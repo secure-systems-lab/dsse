@@ -1,0 +1,238 @@
+{
+  "description": "DSSE protocol test vectors. See README.md in this directory.",
+  "keys": {
+    "A": {
+      "algorithm": "ed25519",
+      "seed": "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60",
+      "public": "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
+    },
+    "B": {
+      "algorithm": "ed25519",
+      "seed": "4ccd089b28ff96da9db6c346ec114e0f5b8a319f35aba624da8cf6ed4fb8a6fb",
+      "public": "3d4017c3e843895a92b70aa74d1b7ebc9c982ccf2ec4968cc0cd55f12af4660c"
+    }
+  },
+  "vectors": [
+    {
+      "id": "single-signature",
+      "description": "One signature by a trusted key over the PAE of the payload.",
+      "envelope": {
+        "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEifQ==",
+        "payloadType": "application/vnd.in-toto+json",
+        "signatures": [
+          {
+            "sig": "2WAfaHm5jluo0w+0rk8uVkluELJYWjSmU9x7EUzx+AyteDGJ4/nqyJXfmAUVFIAoQafWm7AxBZNw5M9ixNHiCA==",
+            "keyid": "A"
+          }
+        ]
+      },
+      "trustedKeys": [
+        "A"
+      ],
+      "threshold": 1,
+      "supportedPayloadTypes": [
+        "application/vnd.in-toto+json"
+      ],
+      "pae": "445353457631203238206170706c69636174696f6e2f766e642e696e2d746f746f2b6a736f6e203433207b225f74797065223a2268747470733a2f2f696e2d746f746f2e696f2f53746174656d656e742f7631227d",
+      "expect": "accept"
+    },
+    {
+      "id": "url-safe-base64",
+      "description": "Payload and signature in URL-safe base64; verifiers MUST accept either alphabet.",
+      "envelope": {
+        "payload": "-_-_Pj8=",
+        "payloadType": "application/vnd.in-toto+json",
+        "signatures": [
+          {
+            "sig": "P-_KHICeR7tI6S_YyejJTRtrXhcQyQ2LYPaL8h90KjC9qN8HU_svOQ6TuDOT1HIrsGW886DbWNWcCmX5twLrAw==",
+            "keyid": "A"
+          }
+        ]
+      },
+      "trustedKeys": [
+        "A"
+      ],
+      "threshold": 1,
+      "supportedPayloadTypes": [
+        "application/vnd.in-toto+json"
+      ],
+      "pae": "445353457631203238206170706c69636174696f6e2f766e642e696e2d746f746f2b6a736f6e203520fbffbf3e3f",
+      "expect": "accept"
+    },
+    {
+      "id": "payload-type-swapped",
+      "description": "The signature covers application/vnd.in-toto+json, but the envelope claims another type.",
+      "envelope": {
+        "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEifQ==",
+        "payloadType": "application/vnd.example.other+json",
+        "signatures": [
+          {
+            "sig": "2WAfaHm5jluo0w+0rk8uVkluELJYWjSmU9x7EUzx+AyteDGJ4/nqyJXfmAUVFIAoQafWm7AxBZNw5M9ixNHiCA==",
+            "keyid": "A"
+          }
+        ]
+      },
+      "trustedKeys": [
+        "A"
+      ],
+      "threshold": 1,
+      "supportedPayloadTypes": [
+        "application/vnd.in-toto+json",
+        "application/vnd.example.other+json"
+      ],
+      "pae": "445353457631203238206170706c69636174696f6e2f766e642e696e2d746f746f2b6a736f6e203433207b225f74797065223a2268747470733a2f2f696e2d746f746f2e696f2f53746174656d656e742f7631227d",
+      "expect": "reject"
+    },
+    {
+      "id": "non-ascii-payload-type",
+      "description": "LEN(type) is the byte length of UTF8(PAYLOAD_TYPE), 29 here, not the 28 characters.",
+      "envelope": {
+        "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEifQ==",
+        "payloadType": "application/vnd.exämple+json",
+        "signatures": [
+          {
+            "sig": "xmSk/ug66ysT7ayhkCIjhAq42zgZXSsEWuzUaNL7w2eGAdF/NU6/fRXPtmfN+5DNSAs5/i2lUnHjbbjPsu0tAw==",
+            "keyid": "A"
+          }
+        ]
+      },
+      "trustedKeys": [
+        "A"
+      ],
+      "threshold": 1,
+      "supportedPayloadTypes": [
+        "application/vnd.exämple+json"
+      ],
+      "pae": "445353457631203239206170706c69636174696f6e2f766e642e6578c3a46d706c652b6a736f6e203433207b225f74797065223a2268747470733a2f2f696e2d746f746f2e696f2f53746174656d656e742f7631227d",
+      "expect": "accept"
+    },
+    {
+      "id": "empty-payload",
+      "description": "An empty SERIALIZED_BODY is signed as \"... 0 \" with a trailing space.",
+      "envelope": {
+        "payload": "",
+        "payloadType": "application/vnd.in-toto+json",
+        "signatures": [
+          {
+            "sig": "gSggCAaTLTYyRH6FIDBem6meyIynsYy8RTHVzwx9tnTb7Bg/1jMWnuVgI/gffqmbsC2VX5/jHfkkDqsj7CDbDg==",
+            "keyid": "A"
+          }
+        ]
+      },
+      "trustedKeys": [
+        "A"
+      ],
+      "threshold": 1,
+      "supportedPayloadTypes": [
+        "application/vnd.in-toto+json"
+      ],
+      "pae": "445353457631203238206170706c69636174696f6e2f766e642e696e2d746f746f2b6a736f6e203020",
+      "expect": "accept"
+    },
+    {
+      "id": "empty-payload-type",
+      "description": "A valid signature over an empty PAYLOAD_TYPE, which no verifier supports.",
+      "envelope": {
+        "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEifQ==",
+        "payloadType": "",
+        "signatures": [
+          {
+            "sig": "iC3q/+3Rm0+lpAJRueDmDh15PnwCfxKmS0NAfKsbv+zgulXQC/WM9trc+j1XEqlwDIg/vf/uNfebeD6sxInrDg==",
+            "keyid": "A"
+          }
+        ]
+      },
+      "trustedKeys": [
+        "A"
+      ],
+      "threshold": 1,
+      "supportedPayloadTypes": [
+        "application/vnd.in-toto+json"
+      ],
+      "pae": "445353457631203020203433207b225f74797065223a2268747470733a2f2f696e2d746f746f2e696f2f53746174656d656e742f7631227d",
+      "expect": "reject"
+    },
+    {
+      "id": "threshold-two-distinct-keys",
+      "description": "Two signatures by two different trusted keys meet a threshold of two.",
+      "envelope": {
+        "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEifQ==",
+        "payloadType": "application/vnd.in-toto+json",
+        "signatures": [
+          {
+            "sig": "2WAfaHm5jluo0w+0rk8uVkluELJYWjSmU9x7EUzx+AyteDGJ4/nqyJXfmAUVFIAoQafWm7AxBZNw5M9ixNHiCA==",
+            "keyid": "A"
+          },
+          {
+            "sig": "c1+67/aT0yqEpwx8PsVY3MLHsj9D0CZ014/Fv/QlG59P+9CobUZ7xECJ/V3USG0Ob9CiE5LjReEZUzNF2l7eBw==",
+            "keyid": "B"
+          }
+        ]
+      },
+      "trustedKeys": [
+        "A",
+        "B"
+      ],
+      "threshold": 2,
+      "supportedPayloadTypes": [
+        "application/vnd.in-toto+json"
+      ],
+      "pae": "445353457631203238206170706c69636174696f6e2f766e642e696e2d746f746f2b6a736f6e203433207b225f74797065223a2268747470733a2f2f696e2d746f746f2e696f2f53746174656d656e742f7631227d",
+      "expect": "accept"
+    },
+    {
+      "id": "threshold-two-one-key-twice",
+      "description": "The same key signs twice; one unique key does not meet a threshold of two.",
+      "envelope": {
+        "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEifQ==",
+        "payloadType": "application/vnd.in-toto+json",
+        "signatures": [
+          {
+            "sig": "2WAfaHm5jluo0w+0rk8uVkluELJYWjSmU9x7EUzx+AyteDGJ4/nqyJXfmAUVFIAoQafWm7AxBZNw5M9ixNHiCA==",
+            "keyid": "A"
+          },
+          {
+            "sig": "2WAfaHm5jluo0w+0rk8uVkluELJYWjSmU9x7EUzx+AyteDGJ4/nqyJXfmAUVFIAoQafWm7AxBZNw5M9ixNHiCA==",
+            "keyid": "A"
+          }
+        ]
+      },
+      "trustedKeys": [
+        "A",
+        "B"
+      ],
+      "threshold": 2,
+      "supportedPayloadTypes": [
+        "application/vnd.in-toto+json"
+      ],
+      "pae": "445353457631203238206170706c69636174696f6e2f766e642e696e2d746f746f2b6a736f6e203433207b225f74797065223a2268747470733a2f2f696e2d746f746f2e696f2f53746174656d656e742f7631227d",
+      "expect": "reject"
+    },
+    {
+      "id": "threshold-two-without-keyids",
+      "description": "KEYID is optional: two distinct signers that omit it still meet a threshold of two.",
+      "envelope": {
+        "payload": "eyJfdHlwZSI6Imh0dHBzOi8vaW4tdG90by5pby9TdGF0ZW1lbnQvdjEifQ==",
+        "payloadType": "application/vnd.in-toto+json",
+        "signatures": [
+          {
+            "sig": "2WAfaHm5jluo0w+0rk8uVkluELJYWjSmU9x7EUzx+AyteDGJ4/nqyJXfmAUVFIAoQafWm7AxBZNw5M9ixNHiCA=="
+          },
+          {
+            "sig": "c1+67/aT0yqEpwx8PsVY3MLHsj9D0CZ014/Fv/QlG59P+9CobUZ7xECJ/V3USG0Ob9CiE5LjReEZUzNF2l7eBw=="
+          }
+        ]
+      },
+      "trustedKeys": [
+        "A",
+        "B"
+      ],
+      "threshold": 2,
+      "supportedPayloadTypes": [
+        "application/vnd.in-toto+json"
+      ],
+      "pae": "445353457631203238206170706c69636174696f6e2f766e642e696e2d746f746f2b6a736f6e203433207b225f74797065223a2268747470733a2f2f696e2d746f746f2e696f2f53746174656d656e742f7631227d",
+      "expect": "accept"
+    }
+  ]
+}

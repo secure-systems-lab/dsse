@@ -1,0 +1,28 @@
+name: vectors
+
+on:
+  push:
+    branches: [master, devel]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  vectors:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Install test dependency
+        run: |
+          python3 -m venv "$RUNNER_TEMP/dsse-venv"
+          "$RUNNER_TEMP/dsse-venv/bin/python" -m pip install pycryptodome==3.23.0
+      - name: Check generated vectors
+        run: |
+          "$RUNNER_TEMP/dsse-venv/bin/python" testvectors/generate.py --check
+      - name: Check reference verifier
+        run: |
+          "$RUNNER_TEMP/dsse-venv/bin/python" testvectors/check_reference.py
