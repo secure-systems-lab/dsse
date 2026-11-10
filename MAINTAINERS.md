@@ -13,4 +13,4 @@ specification, their GitHub username, and their affiliation.
 | Aditya Sirish A Yelgundhalli | @adityasaky | Bloomberg |
 | Marina Moore | @mnm678 | Edera |
 | Joshua Lock | @joshuagl | Verizon |
-| Lukas Pühringer | @lukpueh | New York University |
+| Lukas Pühringer | @lukpueh | Eclipse Foundation |
