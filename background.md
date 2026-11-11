@@ -132,7 +132,7 @@ Rationales for specific decisions:
         encoding led us to develop a simpler ASCII-based PAE. While we were at
         it, we switched to using a fixed number of inputs and added a version
         string ("DSSEv1") to allow for future changes.
-        ([more info](https://github.com/secure-systems-lab/dsse/issues/27))
+        ([more info](https://github.com/dsse-lf/dsse/issues/27))
 
 -   Why not stay backwards compatible by requiring the payload to always be JSON
     with a "_type" field? Then if you want a non-JSON payload, you could simply
